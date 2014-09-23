@@ -1,6 +1,6 @@
 #define LIN_OUT 1 // use the log output function
 #define FFT_N 128 // set number of FFT points
-#define DEBUG 1   // set to 1 to turn on Serial printing
+#define DEBUG 0   // set to 1 to turn on Serial printing
 
 #include <math.h>
 #include <FFT.h>
@@ -14,6 +14,17 @@ float frequency;
 float SAMPLE_RATE = 9600.0;
 int SKIP_MULT = 4;
 int MAX_FFT_BIN = 16383;
+
+/*
+ * used to cut the lights, 
+ * some sources (iPhone) have amps that create a bit of noise that 
+ * remains on for a few seconds even after music is stopped or paused.
+ * Perhaps this doesn't occur on mixers, and it may be possible to
+ * eliminate with an OpAmp and/or low pass filter circuit
+ */
+int MIN_FFT_SUM = 3200;
+
+// LEDeez
 int brightness;  // controls the LED brightness based on dB level
 // LEDs can be set up to 127, but it seems too bright so we tone it down a bit
 int MAX_BRIGHTNESS = 95;
@@ -119,7 +130,7 @@ void loop() {
     frequency = (peak_index * (SAMPLE_RATE / SKIP_MULT)) / (FFT_N / 4);
     brightness = round(1.0 * MAX_BRIGHTNESS * sum_fft / MAX_FFT_BIN);
     
-    if (max_value < 80 || sum_fft < 3000 || peak_index == 0) {
+    if (max_value < 80 || sum_fft < MIN_FFT_SUM || peak_index == 0) {
         // signal too weak or we got the 1st peak (0Hz), no lights
         setColor(strip.Color(0, 0, 0));
     } else if (frequency > 0 && frequency < base_freak * 2) {
@@ -142,7 +153,31 @@ void loop() {
         // blue
         setColor(strip.Color(0, 0, brightness));
     }
-    else if (frequency >= base_freak * 6 && frequency < SAMPLE_RATE/4) {
+    else if (frequency >= base_freak * 6 && frequency < base_freak * 8) {
+        // violence!!!
+        setColor(strip.Color(brightness, 0, brightness));
+    // we'll cycle through the colors again so all high freaks ain't purple!!!
+    } else if (frequency > 8 && frequency < base_freak * 10) {
+        // red
+        setColor(strip.Color(brightness, 0, 0));
+    }
+    else if (frequency >= base_freak * 10 && frequency < (base_freak * 12)) {
+        // yellow
+        setColor(strip.Color(brightness, brightness, 0));
+    }
+    else if (frequency >= base_freak * 12 && frequency < (base_freak * 14)) {
+        // green
+        setColor(strip.Color(0, brightness, 0));
+    }
+    else if (frequency >= base_freak * 14 && frequency < base_freak * 16) {
+        // cyan
+        setColor(strip.Color(0, brightness, brightness));
+    }
+    else if (frequency >= base_freak * 16 && frequency < base_freak * 18) {
+        // blue
+        setColor(strip.Color(0, 0, brightness));
+    }
+    else if (frequency >= base_freak * 18 && frequency < SAMPLE_RATE/SKIP_MULT) {
         // violence!!!
         setColor(strip.Color(brightness, 0, brightness));
     }
