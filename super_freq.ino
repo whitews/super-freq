@@ -1,4 +1,4 @@
-#define LIN_OUT 1 // use the log output function
+#define LIN_OUT 1 // use the linear output function
 #define FFT_N 128 // set number of FFT points
 #define DEBUG 0   // set to 1 to turn on Serial printing
 
@@ -12,7 +12,7 @@ int max_value;
 int sum_fft;
 float frequency;
 float SAMPLE_RATE = 9600.0;
-int SKIP_MULT = 4;
+int SKIP_MULT = 8;
 int MAX_FFT_BIN = 16383;
 
 /*
@@ -22,12 +22,12 @@ int MAX_FFT_BIN = 16383;
  * Perhaps this doesn't occur on mixers, and it may be possible to
  * eliminate with an OpAmp and/or low pass filter circuit
  */
-int MIN_FFT_SUM = 3200;
+int MIN_FFT_SUM = 400;
 
 // LEDeez
 int brightness;  // controls the LED brightness based on dB level
 // LEDs can be set up to 127, but it seems too bright so we tone it down a bit
-int MAX_BRIGHTNESS = 95;
+int MAX_BRIGHTNESS = 127;
 
 float base_freak = SAMPLE_RATE / FFT_N / 2;
 
@@ -92,7 +92,7 @@ void calculateFFT() {
     fft_mag_lin();                 // take the output of the fft
 }
 
-// Fill the dots progressively along the strip.
+// Fill the dots progressively along the strip
 void setColor(uint32_t c) {
     for (int i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, c);
@@ -102,7 +102,7 @@ void setColor(uint32_t c) {
 
 void loop() {
     cli();           // disable global interrupts
-    calculateFFT();  // result is placed in fft_log_out
+    calculateFFT();  // result is placed in fft_lin_out
     sei();           // re-enable interrupts
 
     peak_index = 0;
@@ -113,13 +113,13 @@ void loop() {
         if (max_value < fft_lin_out[i]) {
             // peak index determines frequency
             peak_index = i;
-            // max value determines brightness
+            // max value was used to determine brightness, now using sum_fft
             max_value = fft_lin_out[i];
         }
         if (i > 0) {
             /* 
-             * maybe an alternate way to control brightness
-             * would be the sum of all non-zero bins, i.e. 
+             * alternate way to control brightness
+             * by summng all bins except the first bin, i.e. 
              * the total power in the sample. However, I don't
              * have a handle on what the maximum sum would be.
              */
@@ -128,60 +128,103 @@ void loop() {
     }
 
     frequency = (peak_index * (SAMPLE_RATE / SKIP_MULT)) / (FFT_N / 4);
-    brightness = round(1.0 * MAX_BRIGHTNESS * sum_fft / MAX_FFT_BIN);
+    // Note, using approximate max for scaling brightness as:
+    // 1.5 * max bin size minus our MIN_FFT_SUM lower cutoff
+    brightness = round(1.0 * MAX_BRIGHTNESS * sum_fft / (MAX_FFT_BIN * 1.5 - MIN_FFT_SUM));
+    if (brightness > 127) {
+        brightness = 127;
+    }
     
-    if (max_value < 80 || sum_fft < MIN_FFT_SUM || peak_index == 0) {
+    // Set color based on frequency bin
+    if (max_value < 100 || sum_fft < MIN_FFT_SUM || peak_index == 0) {
+        
         // signal too weak or we got the 1st peak (0Hz), no lights
         setColor(strip.Color(0, 0, 0));
+    
+    // red doesn't get much of a chance if only the first low bin, so give it 2 bins
     } else if (frequency > 0 && frequency < base_freak * 2) {
+        
         // red
         setColor(strip.Color(brightness, 0, 0));
     }
-    else if (frequency >= base_freak * 2 && frequency < (base_freak * 3)) {
+    else if (frequency >= base_freak * 2 && frequency < base_freak * 3) {
+        
+        // orange
+        setColor(strip.Color(brightness, floor(brightness/2.0), 0));
+    }
+    else if (frequency >= base_freak * 3 && frequency < base_freak * 4) {
+        
         // yellow
         setColor(strip.Color(brightness, brightness, 0));
-    }
-    else if (frequency >= base_freak * 3 && frequency < (base_freak * 4)) {
-        // green
-        setColor(strip.Color(0, brightness, 0));
     }
     else if (frequency >= base_freak * 4 && frequency < base_freak * 5) {
-        // cyan
-        setColor(strip.Color(0, brightness, brightness));
+        
+        // lime
+        setColor(strip.Color(floor(brightness/2.0), brightness, 0));
     }
     else if (frequency >= base_freak * 5 && frequency < base_freak * 6) {
-        // blue
-        setColor(strip.Color(0, 0, brightness));
-    }
-    else if (frequency >= base_freak * 6 && frequency < base_freak * 8) {
-        // violence!!!
-        setColor(strip.Color(brightness, 0, brightness));
-    // we'll cycle through the colors again so all high freaks ain't purple!!!
-    } else if (frequency > 8 && frequency < base_freak * 10) {
-        // red
-        setColor(strip.Color(brightness, 0, 0));
-    }
-    else if (frequency >= base_freak * 10 && frequency < (base_freak * 12)) {
-        // yellow
-        setColor(strip.Color(brightness, brightness, 0));
-    }
-    else if (frequency >= base_freak * 12 && frequency < (base_freak * 14)) {
+        
         // green
         setColor(strip.Color(0, brightness, 0));
     }
-    else if (frequency >= base_freak * 14 && frequency < base_freak * 16) {
+    else if (frequency >= base_freak * 6 && frequency < base_freak * 7) {
+        
         // cyan
         setColor(strip.Color(0, brightness, brightness));
     }
-    else if (frequency >= base_freak * 16 && frequency < base_freak * 18) {
+    else if (frequency >= base_freak * 7 && frequency < base_freak * 8) {
+        
         // blue
         setColor(strip.Color(0, 0, brightness));
     }
-    else if (frequency >= base_freak * 18 && frequency < SAMPLE_RATE/SKIP_MULT) {
+    else if (frequency >= base_freak * 8 && frequency < base_freak * 9) {
+        
+        // violet
+        setColor(strip.Color(brightness, 0, brightness));
+    // we'll cycle through the colors again so all high freaks ain't purple!!!
+    } else if (frequency > 9 && frequency < base_freak * 10) {
+        
+        // red
+        setColor(strip.Color(brightness, 0, 0));
+    }
+    else if (frequency >= base_freak * 10 && frequency < base_freak * 12) {
+        
+        // orange
+        setColor(strip.Color(brightness, floor(brightness/2.0), 0));
+    }
+    else if (frequency >= base_freak * 12 && frequency < (base_freak * 14)) {
+        
+        // yellow
+        setColor(strip.Color(brightness, brightness, 0));
+    }
+    else if (frequency >= base_freak * 14 && frequency < base_freak * 16) {
+        
+        // lime
+        setColor(strip.Color(floor(brightness/2.0), brightness, 0));
+    }
+    else if (frequency >= base_freak * 16 && frequency < (base_freak * 18)) {
+        
+        // green
+        setColor(strip.Color(0, brightness, 0));
+    }
+    else if (frequency >= base_freak * 18 && frequency < base_freak * 18) {
+        
+        // cyan
+        setColor(strip.Color(0, brightness, brightness));
+    }
+    else if (frequency >= base_freak * 18 && frequency < base_freak * 20) {
+        
+        // blue
+        setColor(strip.Color(0, 0, brightness));
+    }
+    // everything above 20 bins should be pretty rare given the low pass filter,
+    // so anything with enough power to get above this is quite strong
+    else if (frequency >= base_freak * 20) {
+        
         // violence!!!
         setColor(strip.Color(brightness, 0, brightness));
     }
-    
+        
     if (DEBUG) {
         Serial.print("FFT sum: ");
         Serial.print(sum_fft);
