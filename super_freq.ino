@@ -96,8 +96,8 @@ void calculateFFT() {
 void setColor(uint32_t c) {
     for (int i=0; i < strip.numPixels(); i++) {
         strip.setPixelColor(i, c);
-        strip.show();
     }
+    strip.show();
 }
 
 void loop() {
