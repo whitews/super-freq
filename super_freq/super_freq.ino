@@ -22,7 +22,7 @@ int MAX_FFT_BIN = 16383;
  * Perhaps this doesn't occur on mixers, and it may be possible to
  * eliminate with an OpAmp and/or low pass filter circuit
  */
-int MIN_FFT_SUM = 400;
+int MIN_FFT_SUM = 100;
 
 // LEDeez
 int brightness;  // controls the LED brightness based on dB level
@@ -32,7 +32,7 @@ int MAX_BRIGHTNESS = 127;
 float base_freak = SAMPLE_RATE / FFT_N / 2;
 
 // Number of RGB LEDs in strand:
-int nLEDs = 32;
+int nLEDs = 160;
 
 // Chose 2 pins for output; can be any valid output pins:
 int dataPin  = 2;
@@ -42,48 +42,8 @@ int clockPin = 3;
 // are 32 LEDs per meter but you can extend or cut the strip.  Next two
 // parameters are SPI data and clock pins:
 LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
-uint32_t strip_color = strip.Color(0, 0, 0);
-
-struct Color {
-    float red;
-    float green;
-    float blue;
-};
-
-struct Color full_spectrum[24] = {
-    { 0.25, 0.00, 1.00 },  // indigo
-    { 0.00, 0.00, 1.00 },  // blue
-    { 0.00, 0.25, 1.00 },  // med. blue
-    { 0.00, 0.50, 1.00 },  // sky blue
-    { 0.00, 0.75, 1.00 },  // pale blue
-    { 0.00, 1.00, 1.00 },  // cyan
-    { 0.00, 1.00, 0.75 },  // pale green
-    { 0.00, 1.00, 0.50 },  // grass green
-    { 0.00, 1.00, 0.25 },  // bright green
-    { 0.00, 1.00, 0.00 },  // green
-    { 0.25, 1.00, 0.00 },  // lime
-    { 0.50, 1.00, 0.00 },  // bright lime
-    { 0.75, 1.00, 0.00 },  // neon lime
-    { 1.00, 1.00, 0.00 },  // yellow
-    { 1.00, 0.75, 0.00 },  // orange
-    { 1.00, 0.50, 0.00 },  // med. orange
-    { 1.00, 0.25, 0.00 },  // dark orange
-    { 1.00, 0.00, 0.00 },  // red
-    { 1.00, 0.00, 0.25 },  // pink
-    { 1.00, 0.00, 0.50 },  // bright pink
-    { 1.00, 0.00, 0.75 },  // hot pink
-    { 1.00, 0.00, 1.00 },  // purple
-    { 0.75, 0.00, 1.00 },  // hot purple
-    { 0.50, 0.00, 1.00 }   // deep purple
-};
-
-Color color_palette[24];
 
 void setup() {
-    for (int i = 0; i < 24; i++) {
-        color_palette[i] = full_spectrum[i];
-    }
-
     if (DEBUG) {
         Serial.begin(9600);
     }
@@ -134,20 +94,62 @@ void calculateFFT() {
 
 // Set color based on frequency and brightness
 void setColor(int peak_index, int brightness) {
+    struct Color {
+        int red;
+        int green;
+        int blue;
+    };
     
+    struct Color full_spectrum[24] = {
+        {  25,   0, 100 },  // indigo
+        {   0,   0, 100 },  // blue
+        {   0,  25, 100 },  // med. blue
+        {   0,  50, 100 },  // sky blue
+        {   0,  75, 100 },  // pale blue
+        {   0, 100, 100 },  // cyan
+        {   0, 100,  75 },  // pale green
+        {   0, 100,  50 },  // grass green
+        {   0, 100,  25 },  // bright green
+        {   0, 100,   0 },  // green
+        {  25, 100,   0 },  // lime
+        {  50, 100,   0 },  // bright lime
+        {  75, 100,   0 },  // neon lime
+        { 100, 100,   0 },  // yellow
+        { 100,  75,   0 },  // orange
+        { 100,  50,   0 },  // med. orange
+        { 100,  25,   0 },  // dark orange
+        { 100,   0,   0 },  // red
+        { 100,   0,  25 },  // pink
+        { 100,   0,  50 },  // bright pink
+        { 100,   0,  75 },  // hot pink
+        { 100,   0, 100 },  // purple
+        { 100,  50, 100 },  // hot purple
+        { 100, 100, 100 }   // white hot
+    };
+    
+    Color color_palette[24];
+    uint32_t strip_color = strip.Color(0, 0, 0);
+    
+    for (int i = 0; i < 24; i++) {
+        color_palette[i] = full_spectrum[i];
+    }
+
     if (peak_index == 0) {
+        // signal was weak, turn lights off
         strip_color = strip.Color(0, 0, 0);
+    } else if (peak_index == -1) {
+        // do nothing, use last color
     } else if (peak_index > 24) {
         strip_color = strip.Color(
-            round(color_palette[23].red   * brightness),
-            round(color_palette[23].green * brightness),
-            round(color_palette[23].blue  * brightness)
+            round(color_palette[23].red   * brightness / 127),
+            round(color_palette[23].green * brightness / 127),
+            round(color_palette[23].blue  * brightness / 127)
         );
     } else {
         strip_color = strip.Color(
-            round(color_palette[peak_index - 1].red   * brightness),
-            round(color_palette[peak_index - 1].green * brightness),
-            round(color_palette[peak_index - 1].blue  * brightness)
+            round(color_palette[peak_index - 1].red   * brightness / 127),
+            round(color_palette[peak_index - 1].green * brightness / 127),
+            round(color_palette[peak_index - 1].blue  * brightness / 127)
         );
     }
     
@@ -186,15 +188,20 @@ void loop() {
 
     // Note, using approximate max for scaling brightness as:
     // 1.5 * max bin size minus our MIN_FFT_SUM lower cutoff
-    brightness = round(1.0 * MAX_BRIGHTNESS * sum_fft / (MAX_FFT_BIN * 1.5 - MIN_FFT_SUM));
+    brightness = round(3.5 * MAX_BRIGHTNESS * max_value / MAX_FFT_BIN);
     if (brightness > 127) {
         brightness = 127;
+    } else if (brightness < 0) {
+        brightness = 0;
     }
     
     // Set frequency to zero if signal is weak or if the 1st peak (0Hz) is dominant
-    if (max_value < 60 || sum_fft < MIN_FFT_SUM || peak_index == 0) {
+    if (max_value < 10 || sum_fft < MIN_FFT_SUM) {
         // signal too weak or we got the 1st peak (0Hz), no lights
         peak_index = 0;        
+    }
+    if (peak_index == 0) {
+        peak_index = -1;
     }
     
     setColor(peak_index, brightness);
@@ -213,12 +220,6 @@ void loop() {
         Serial.print("\tBrightness: ");
         Serial.println(brightness);
         
-        Serial.print("Red: ");
-        Serial.print(color_palette[peak_index].red);
-        Serial.print("\tGreen: ");
-        Serial.print(color_palette[peak_index].green);
-        Serial.print("\tBlue: ");
-        Serial.println(color_palette[peak_index].blue);
     }
 }
 
