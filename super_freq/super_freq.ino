@@ -2,46 +2,119 @@
 #define FFT_N 128 // set number of FFT points
 #define DEBUG 1   // set to 1 to turn on Serial printing
 
+/*
+ * Used to turn off the lights for low volumes 
+ * 
+ * Note: some sources (iPhone) have amps that 
+ * remains on for a few seconds even after the 
+ * music is stopped or paused, so these are a 
+ * little higher than they might ought to be 
+ * for mixers.
+ */
+#define MIN_FFT_SUM 400
+#define MIN_PEAK_VALUE 48
+
+// Some FFT constants
+#define SAMPLE_RATE 9600
+#define SKIP_MULT 8
+#define MAX_FFT_BIN 32767
+
 #include <math.h>
 #include <FFT.h>
 #include "LPD8806.h"
 #include "SPI.h"
 
+// FFT stuff
 int peak_index;
 int max_value;
 int sum_fft;
-float frequency;
-float SAMPLE_RATE = 9600.0;
-int SKIP_MULT = 8;
-int MAX_FFT_BIN = 16383;
-
-/*
- * used to cut the lights, 
- * some sources (iPhone) have amps that create a bit of noise that 
- * remains on for a few seconds even after music is stopped or paused.
- * Perhaps this doesn't occur on mixers, and it may be possible to
- * eliminate with an OpAmp and/or low pass filter circuit
- */
-int MIN_FFT_SUM = 100;
+float frequency;  // only used for debugging
 
 // LEDeez
-int brightness;  // controls the LED brightness based on dB level
-// LEDs can be set up to 127, but it seems too bright so we tone it down a bit
-int MAX_BRIGHTNESS = 127;
+int nLEDs = 32;  // Number of RGB LEDs in strand
+byte max_brightness = 127;  // LED intensity max is 127
+byte brightness;  // where LED brightness is stored (based on dB level)
 
-float base_freak = SAMPLE_RATE / FFT_N / 2;
-
-// Number of RGB LEDs in strand:
-int nLEDs = 160;
-
-// Chose 2 pins for output; can be any valid output pins:
-int dataPin  = 2;
-int clockPin = 3;
+// Pins (can be any valid output pins)
+byte dataPin  = 2;
+byte clockPin = 3;
 
 // First parameter is the number of LEDs in the strand.  The LED strips
 // are 32 LEDs per meter but you can extend or cut the strip.  Next two
 // parameters are SPI data and clock pins:
 LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
+uint32_t strip_color = strip.Color(0, 0, 0);
+
+// Color stuff
+byte red = 0;
+byte green = 0;
+byte blue = 0;
+
+struct Color {
+    byte red;
+    byte green;
+    byte blue;
+};
+
+byte palette_color_count = 24;
+
+// each palette is 24 colors, all are stored in the same array
+const struct Color palettes[48] PROGMEM = {
+    // 1st palette: full spectrum of colors
+    {  25,   0, 100 },  // indigo
+    {   0,   0, 100 },  // blue
+    {   0,  25, 100 },  // med. blue
+    {   0,  50, 100 },  // sky blue
+    {   0,  75, 100 },  // pale blue
+    {   0, 100, 100 },  // cyan
+    {   0, 100,  75 },  // pale green
+    {   0, 100,  50 },  // grass green
+    {   0, 100,  25 },  // bright green
+    {   0, 100,   0 },  // green
+    {  25, 100,   0 },  // lime
+    {  50, 100,   0 },  // bright lime
+    {  75, 100,   0 },  // neon lime
+    { 100, 100,   0 },  // yellow
+    { 100,  75,   0 },  // orange
+    { 100,  50,   0 },  // med. orange
+    { 100,  25,   0 },  // dark orange
+    { 100,   0,   0 },  // red
+    { 100,   0,  25 },  // pink
+    { 100,   0,  50 },  // bright pink
+    { 100,   0,  75 },  // hot pink
+    { 100,   0, 100 },  // purple
+    { 100,  50, 100 },  // hot purple
+    { 100, 100, 100 },  // white hot
+
+    // 2nd palette: warm colors
+    { 100, 100,   0 },  // yellow
+    { 100, 100,   0 },  // yellow
+    { 100, 100,   0 },  // yellow
+    { 100, 100,   0 },  // yellow
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0, 100 },  // purple
+    { 100,   0, 100 },  // purple
+    { 100,   0, 100 },  // purple
+    { 100,   0, 100 },  // purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100, 100, 100 },  // white hot
+    { 100, 100, 100 },  // white hot
+    { 100, 100, 100 },  // white hot
+    { 100, 100, 100 }   // white hot
+};
+
+Color color_palette[24];
+byte palette_choice = 0;  // there's 2 palettes: choose 0 or 1
 
 void setup() {
     if (DEBUG) {
@@ -51,6 +124,13 @@ void setup() {
     ADCSRA = 0xe5;        // set the adc to free running mode 
     ADMUX = 0x40;         // use adc0
     DIDR0 = 0x01;         // turn off the digital input for adc0
+    
+    // initial color palette
+    for (int i = 0; i < 24; i++) {
+        color_palette[i].red = pgm_read_byte(&(palettes[i + ((palette_color_count - 1) * palette_choice)].red));
+        color_palette[i].green = pgm_read_byte(&(palettes[i + ((palette_color_count - 1) * palette_choice)].green));
+        color_palette[i].blue = pgm_read_byte(&(palettes[i + ((palette_color_count - 1) * palette_choice)].blue));
+    }
 
     // Start up the LED strip
     strip.begin();
@@ -71,7 +151,7 @@ void calculateFFT() {
          * frequencies.
          * 
          * The effective sample rate would then be:
-         * SAMPLE_RATE / SKIP_MULT
+         * SAMPLE_RATE / (SKIP_MULT / 2)
          */
         for (int j = 0; j < SKIP_MULT; j++) {
             while(!(ADCSRA & 0x10)); // wait for adc to be ready
@@ -94,63 +174,33 @@ void calculateFFT() {
 
 // Set color based on frequency and brightness
 void setColor(int peak_index, int brightness) {
-    struct Color {
-        int red;
-        int green;
-        int blue;
-    };
-    
-    struct Color full_spectrum[24] = {
-        {  25,   0, 100 },  // indigo
-        {   0,   0, 100 },  // blue
-        {   0,  25, 100 },  // med. blue
-        {   0,  50, 100 },  // sky blue
-        {   0,  75, 100 },  // pale blue
-        {   0, 100, 100 },  // cyan
-        {   0, 100,  75 },  // pale green
-        {   0, 100,  50 },  // grass green
-        {   0, 100,  25 },  // bright green
-        {   0, 100,   0 },  // green
-        {  25, 100,   0 },  // lime
-        {  50, 100,   0 },  // bright lime
-        {  75, 100,   0 },  // neon lime
-        { 100, 100,   0 },  // yellow
-        { 100,  75,   0 },  // orange
-        { 100,  50,   0 },  // med. orange
-        { 100,  25,   0 },  // dark orange
-        { 100,   0,   0 },  // red
-        { 100,   0,  25 },  // pink
-        { 100,   0,  50 },  // bright pink
-        { 100,   0,  75 },  // hot pink
-        { 100,   0, 100 },  // purple
-        { 100,  50, 100 },  // hot purple
-        { 100, 100, 100 }   // white hot
-    };
-    
-    Color color_palette[24];
-    uint32_t strip_color = strip.Color(0, 0, 0);
-    
-    for (int i = 0; i < 24; i++) {
-        color_palette[i] = full_spectrum[i];
-    }
-
     if (peak_index == 0) {
         // signal was weak, turn lights off
-        strip_color = strip.Color(0, 0, 0);
-    } else if (peak_index == -1) {
-        // do nothing, use last color
+        red = 0;
+        green = 0;
+        blue = 0;
     } else if (peak_index > 24) {
-        strip_color = strip.Color(
-            round(color_palette[23].red   * brightness / 127),
-            round(color_palette[23].green * brightness / 127),
-            round(color_palette[23].blue  * brightness / 127)
-        );
+        red = color_palette[23].red;
+        green = color_palette[23].green;
+        blue = color_palette[23].blue;  
     } else {
-        strip_color = strip.Color(
-            round(color_palette[peak_index - 1].red   * brightness / 127),
-            round(color_palette[peak_index - 1].green * brightness / 127),
-            round(color_palette[peak_index - 1].blue  * brightness / 127)
-        );
+        red = color_palette[peak_index - 1].red;
+        green = color_palette[peak_index - 1].green;
+        blue = color_palette[peak_index - 1].blue;        
+    }
+    
+    strip_color = strip.Color(
+        round(red   * brightness / 127),
+        round(green * brightness / 127),
+        round(blue  * brightness / 127)
+    );
+    
+    if (DEBUG) {
+        Serial.print(color_palette[peak_index - 1].red);
+        Serial.print("\t");
+        Serial.print(color_palette[peak_index - 1].green);
+        Serial.print("\t");
+        Serial.println(color_palette[peak_index - 1].blue);
     }
     
     for (int i=0; i < strip.numPixels(); i++) {
@@ -160,6 +210,20 @@ void setColor(int peak_index, int brightness) {
 }
 
 void loop() {
+    // read color palette input pin here
+    // this line reserved for color palette pin
+    
+    // check if palette changed
+    // Note: this equality will be changed when color palette chooser 
+    // is implemented
+    if (palette_choice != palette_choice) {
+        for (int i = 0; i < 24; i++) {
+            color_palette[i].red = pgm_read_byte(&(palettes[i].red));
+            color_palette[i].green = pgm_read_byte(&(palettes[i].green));
+            color_palette[i].blue = pgm_read_byte(&(palettes[i].blue));
+        }
+    }
+    
     cli();           // disable global interrupts
     calculateFFT();  // result is placed in fft_lin_out
     sei();           // re-enable interrupts
@@ -172,42 +236,35 @@ void loop() {
         if (max_value < fft_lin_out[i]) {
             // peak index determines frequency
             peak_index = i;
-            // max value was used to determine brightness, now using sum_fft
+            // max value used as an additional check to turn the lights off
             max_value = fft_lin_out[i];
         }
         if (i > 0) {
-            /* 
-             * alternate way to control brightness
-             * by summng all bins except the first bin, i.e. 
-             * the total power in the sample. However, I don't
-             * have a handle on what the maximum sum would be.
-             */
+            // control brightness by summing all bins except the first bin, 
+            // i.e. the total power in the sample
             sum_fft += fft_lin_out[i];
         }
     }
 
-    // Note, using approximate max for scaling brightness as:
-    // 1.5 * max bin size minus our MIN_FFT_SUM lower cutoff
-    brightness = round(3.5 * MAX_BRIGHTNESS * max_value / MAX_FFT_BIN);
-    if (brightness > 127) {
+    // Use sum_fft to determine brightness
+    brightness = round(1.0 * max_brightness * sum_fft / MAX_FFT_BIN);
+    
+    // safety net in case our calculated brightness was out of range
+    if (brightness > 127) {  // too much
         brightness = 127;
-    } else if (brightness < 0) {
+    } else if (brightness < 0) {  // too little
         brightness = 0;
     }
     
-    // Set frequency to zero if signal is weak or if the 1st peak (0Hz) is dominant
-    if (max_value < 10 || sum_fft < MIN_FFT_SUM) {
-        // signal too weak or we got the 1st peak (0Hz), no lights
+    // Reset peak_index to zero if signal is weak
+    if (max_value < MIN_PEAK_VALUE || sum_fft < MIN_FFT_SUM) {
         peak_index = 0;        
-    }
-    if (peak_index == 0) {
-        peak_index = -1;
     }
     
     setColor(peak_index, brightness);
             
     if (DEBUG) {
-        frequency = (peak_index * (SAMPLE_RATE / SKIP_MULT)) / (FFT_N / 4);
+        frequency = peak_index * ((1.0 * SAMPLE_RATE / (SKIP_MULT / 2)) / (FFT_N / 2));
         
         Serial.print("FFT sum: ");
         Serial.print(sum_fft);
@@ -219,8 +276,5 @@ void loop() {
         Serial.print(frequency);
         Serial.print("\tBrightness: ");
         Serial.println(brightness);
-        
     }
 }
-
-
