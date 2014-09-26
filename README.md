@@ -6,7 +6,7 @@ Illuminati project for Arduino to map audio frequencies to colors on a programma
 Libraries
 ---------
 
-FFT library from OpenMusicLabs:
+FFT library from Open Music Labs:
 
 http://wiki.openmusiclabs.com/wiki/ArduinoFFT
 
