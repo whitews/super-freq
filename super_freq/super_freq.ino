@@ -290,6 +290,11 @@ void loop() {
     // this line reserved for color palette pin
     button1State = digitalRead(button1Pin);
     
+    if (button1State == HIGH) {
+        // pauses the colors
+        return;
+    }
+    
     // check if palette changed
     // Note: this equality will be changed when color palette chooser 
     // is implemented
