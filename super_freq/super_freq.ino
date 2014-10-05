@@ -35,9 +35,17 @@ int nLEDs = 32;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 
-// Pins (can be any valid output pins)
-byte dataPin  = 2;
-byte clockPin = 3;
+// Pins
+byte dataPin  = 2;  // any pin
+byte clockPin = 3;  // any pin
+byte button1Pin = 7;  // any pin
+byte button2Pin = 8;  // any pin
+
+int button1State = 0;
+int button2State = 0;
+
+boolean set_LED_count_mode = false;
+boolean increment_LED_count = false;
 
 // First parameter is the number of LEDs in the strand.  The LED strips
 // are 32 LEDs per meter but you can extend or cut the strip.  Next two
@@ -120,6 +128,17 @@ void setup() {
     if (DEBUG) {
         Serial.begin(9600);
     }
+    
+    pinMode(button1Pin, INPUT);
+    pinMode(button2Pin, INPUT);
+    
+    // check for button press to enter LED count set mode
+    button1State = digitalRead(button1Pin);
+    
+    if (button1State == HIGH) {
+        set_LED_count_mode = true;
+    }
+    
     TIMSK0 = 0;           // turn off timer0 for lower jitter
     ADCSRA = 0xe5;        // set the adc to free running mode 
     ADMUX = 0x40;         // use adc0
@@ -209,9 +228,67 @@ void setColor(int peak_index, int brightness) {
     strip.show();
 }
 
+void setLEDcount() {
+    button2State = digitalRead(button2Pin);
+    nLEDs = 1;
+    strip.updateLength(nLEDs);
+    strip_color = strip.Color(127, 127, 127);
+    for (int i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, strip_color);
+    }
+    strip.show();
+    
+    // button 1 may still be pressed since the code gets here very fast
+    // if button 1 is pressed, wait will the user releases it
+    while (button1State == HIGH) {
+        // do nothing, we need to wait until user releases the button
+        button1State = digitalRead(button1Pin);
+    }
+    
+    // button 2 is used to exit the LED count set mode
+    while (button2State == LOW) {
+        button1State = digitalRead(button1Pin);
+        button2State = digitalRead(button2Pin);
+        increment_LED_count = false;
+        
+        if (button1State == HIGH) {
+            increment_LED_count = true;
+        }
+        
+        while (button1State == HIGH) {
+            // do nothing, we need to wait until user releases the button
+            button1State = digitalRead(button1Pin);
+        }
+        
+        if (increment_LED_count) {
+            Serial.println("Button pressed!");
+            nLEDs++;
+            strip.updateLength(nLEDs);
+            strip_color = strip.Color(127, 127, 127);
+            for (int i=0; i < strip.numPixels(); i++) {
+                strip.setPixelColor(i, strip_color);
+            }
+            strip.show();
+        }
+    }
+    
+    // button 2 was pressed, save LED count to EEPROM
+    set_LED_count_mode = false;
+}
+
 void loop() {
+    // check for LED count mode
+    if (set_LED_count_mode == true) {
+        if (DEBUG) {
+            Serial.println("Entered LED set mode");
+        }
+        setLEDcount();
+        return;
+    }
+    
     // read color palette input pin here
     // this line reserved for color palette pin
+    button1State = digitalRead(button1Pin);
     
     // check if palette changed
     // Note: this equality will be changed when color palette chooser 
