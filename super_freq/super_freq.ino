@@ -67,7 +67,7 @@ struct Color {
 byte palette_color_count = 24;
 
 // each palette is 24 colors, all are stored in the same array
-const struct Color palettes[148] PROGMEM = {
+const struct Color palettes[144] PROGMEM = {
     // 1st palette: full spectrum of colors
     {  25,   0, 100 },  // indigo
     {   0,   0, 100 },  // blue
