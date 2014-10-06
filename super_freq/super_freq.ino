@@ -38,11 +38,11 @@ byte brightness;  // where LED brightness is stored (based on dB level)
 // Pins
 byte dataPin  = 2;  // any pin
 byte clockPin = 3;  // any pin
-byte button1Pin = 7;  // any pin
-byte button2Pin = 8;  // any pin
+byte button2Pin = 7;  // any pin
+byte button3Pin = 8;  // any pin
 
-int button1State = 0;
 int button2State = 0;
+int button3State = 0;
 
 boolean set_LED_count_mode = false;
 boolean increment_LED_count = false;
@@ -118,9 +118,9 @@ const struct Color palettes[144] PROGMEM = {
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
-    { 100, 100, 100 },   // white hot
+    { 100, 100, 100 },  // white hot
      
-     // 3rd palette: Blue Orange, hints of white hot and red 
+     // 3rd palette: Blue Orange
     {   0,   0, 100 },  // blue
     {   0,   0, 100 },  // blue
     {   0,   0, 100 },  // blue
@@ -136,17 +136,17 @@ const struct Color palettes[144] PROGMEM = {
     {   0,   0, 100 },  // blue
     {   0,   0, 100 },  // blue
     { 100,  50,   0 },  // orange
-    {   0,   0, 100 },  // blue
     { 100,  50,   0 },  // orange
     {   0,   0, 100 },  // blue
     { 100,  50,   0 },  // orange
     {   0,   0, 100 },  // blue
     { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
     { 100,  50,   0 },  // orange
     {   0,   0, 100 },  // blue
     { 100,  50,   0 },  // orange
     
-        // 4th palette: brights, less yellows
+    // 4th palette: brights, less yellows
     { 100,  10, 100 },  // hot purple
     { 100,  10, 100 },  // hot purple
     { 100,  10, 100 },  // hot purple
@@ -198,7 +198,7 @@ const struct Color palettes[144] PROGMEM = {
     {   0, 100,   0 },  // green
     { 100,   0,  25 },  // pink
    
-    // 6th palette: Simply Red.  WHY ARE THERE OTHER COLORS PRESENT?
+    // 6th palette: Simply Red.
     { 100,   0,   0 },  // red
     { 100,   0,   0 },  // red
     { 100,   0,   0 },  // red
@@ -227,20 +227,20 @@ const struct Color palettes[144] PROGMEM = {
 };
 
 Color color_palette[24];
-byte palette_choice = 5;  // there's 2 palettes: choose 0 or 1
+byte palette_choice = 0;  // there's 2 palettes: choose 0 or 1
 
 void setup() {
     if (DEBUG) {
         Serial.begin(9600);
     }
     
-    pinMode(button1Pin, INPUT);
     pinMode(button2Pin, INPUT);
+    pinMode(button3Pin, INPUT);
     
     // check for button press to enter LED count set mode
-    button1State = digitalRead(button1Pin);
+    button2State = digitalRead(button2Pin);
     
-    if (button1State == HIGH) {
+    if (button2State == HIGH) {
         set_LED_count_mode = true;
     }
     
@@ -334,7 +334,7 @@ void setColor(int peak_index, int brightness) {
 }
 
 void setLEDcount() {
-    button2State = digitalRead(button2Pin);
+    button3State = digitalRead(button3Pin);
     nLEDs = 1;
     strip.updateLength(nLEDs);
     strip_color = strip.Color(127, 127, 127);
@@ -345,24 +345,24 @@ void setLEDcount() {
     
     // button 1 may still be pressed since the code gets here very fast
     // if button 1 is pressed, wait will the user releases it
-    while (button1State == HIGH) {
+    while (button2State == HIGH) {
         // do nothing, we need to wait until user releases the button
-        button1State = digitalRead(button1Pin);
+        button2State = digitalRead(button2Pin);
     }
     
     // button 2 is used to exit the LED count set mode
-    while (button2State == LOW) {
-        button1State = digitalRead(button1Pin);
+    while (button3State == LOW) {
         button2State = digitalRead(button2Pin);
+        button3State = digitalRead(button3Pin);
         increment_LED_count = false;
         
-        if (button1State == HIGH) {
+        if (button2State == HIGH) {
             increment_LED_count = true;
         }
         
-        while (button1State == HIGH) {
+        while (button2State == HIGH) {
             // do nothing, we need to wait until user releases the button
-            button1State = digitalRead(button1Pin);
+            button2State = digitalRead(button2Pin);
         }
         
         if (increment_LED_count) {
@@ -393,9 +393,9 @@ void loop() {
     
     // read color palette input pin here
     // this line reserved for color palette pin
-    button1State = digitalRead(button1Pin);
+    button2State = digitalRead(button2Pin);
     
-    if (button1State == HIGH) {
+    if (button2State == HIGH) {
         // pauses the colors
         return;
     }
