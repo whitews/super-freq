@@ -227,7 +227,7 @@ const struct Color palettes[144] PROGMEM = {
 };
 
 Color color_palette[24];
-byte palette_choice = 0;  // there's 2 palettes: choose 0 or 1
+byte palette_choice = 5;  // there's 2 palettes: choose 0 or 1
 
 void setup() {
     if (DEBUG) {
@@ -251,9 +251,9 @@ void setup() {
     
     // initial color palette
     for (int i = 0; i < 24; i++) {
-        color_palette[i].red = pgm_read_byte(&(palettes[i + ((palette_color_count - 1) * palette_choice)].red));
-        color_palette[i].green = pgm_read_byte(&(palettes[i + ((palette_color_count - 1) * palette_choice)].green));
-        color_palette[i].blue = pgm_read_byte(&(palettes[i + ((palette_color_count - 1) * palette_choice)].blue));
+        color_palette[i].red = pgm_read_byte(&(palettes[i + (palette_color_count * palette_choice)].red));
+        color_palette[i].green = pgm_read_byte(&(palettes[i + (palette_color_count * palette_choice)].green));
+        color_palette[i].blue = pgm_read_byte(&(palettes[i + (palette_color_count * palette_choice)].blue));
     }
 
     // Start up the LED strip
