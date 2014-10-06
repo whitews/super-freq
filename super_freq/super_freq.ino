@@ -31,7 +31,7 @@ int sum_fft;
 float frequency;  // only used for debugging
 
 // LEDeez
-int nLEDs = 32;  // Number of RGB LEDs in strand
+int nLEDs = 160;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 
@@ -67,7 +67,7 @@ struct Color {
 byte palette_color_count = 24;
 
 // each palette is 24 colors, all are stored in the same array
-const struct Color palettes[48] PROGMEM = {
+const struct Color palettes[148] PROGMEM = {
     // 1st palette: full spectrum of colors
     {  25,   0, 100 },  // indigo
     {   0,   0, 100 },  // blue
@@ -118,7 +118,112 @@ const struct Color palettes[48] PROGMEM = {
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
-    { 100, 100, 100 }   // white hot
+    { 100, 100, 100 },   // white hot
+     
+     // 3rd palette: Blue Orange, hints of white hot and red 
+    {   0,   0, 100 },  // blue
+    {   0,   0, 100 },  // blue
+    {   0,   0, 100 },  // blue
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // orange
+    {   0,   0, 100 },  // blue
+    { 100,  50,   0 },  // orange
+    
+        // 4th palette: brights, less yellows
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    { 100,  10, 100 },  // hot purple
+    
+    // 5th palette: Rat Fink 
+    {   0, 100,   0 },  // green
+    {   0, 100,   0 },  // green
+    {   0, 100,   0 },  // green
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+    {   0, 100,   0 },  // green
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    {   0, 100,   0 },  // green
+    { 100,   0,  25 },  // pink
+   
+    // 6th palette: Simply Red.  WHY ARE THERE OTHER COLORS PRESENT?
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 },  // red
+    { 100,   0,   0 }   // red
+    
 };
 
 Color color_palette[24];
