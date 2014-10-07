@@ -238,9 +238,9 @@ void setup() {
     pinMode(button3Pin, INPUT);
     
     // check for button press to enter LED count set mode
-    button2State = digitalRead(button2Pin);
+    button3State = digitalRead(button3Pin);
     
-    if (button2State == HIGH) {
+    if (button3State == HIGH) {
         set_LED_count_mode = true;
     }
     
@@ -343,26 +343,26 @@ void setLEDcount() {
     }
     strip.show();
     
-    // button 1 may still be pressed since the code gets here very fast
+    // button 3 may still be pressed since the code gets here very fast
     // if button 1 is pressed, wait will the user releases it
-    while (button2State == HIGH) {
+    while (button3State == HIGH) {
         // do nothing, we need to wait until user releases the button
-        button2State = digitalRead(button2Pin);
+        button3State = digitalRead(button3Pin);
     }
     
     // button 2 is used to exit the LED count set mode
-    while (button3State == LOW) {
+    while (button2State == LOW) {
         button2State = digitalRead(button2Pin);
         button3State = digitalRead(button3Pin);
         increment_LED_count = false;
         
-        if (button2State == HIGH) {
+        if (button3State == HIGH) {
             increment_LED_count = true;
         }
         
-        while (button2State == HIGH) {
+        while (button3State == HIGH) {
             // do nothing, we need to wait until user releases the button
-            button2State = digitalRead(button2Pin);
+            button3State = digitalRead(button3Pin);
         }
         
         if (increment_LED_count) {
@@ -381,6 +381,26 @@ void setLEDcount() {
     set_LED_count_mode = false;
 }
 
+void engageViolence() {
+    if (DEBUG) {
+        Serial.println("Violence mode engaged!");
+    }
+    
+    // first ramp up the brightness
+    for (int i=0; i < 128; i++) {
+        strip_color = strip.Color(i, i, i);
+        for (int i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip_color);
+        }
+        strip.show();
+    }
+    
+    while (button3State == HIGH) {
+        // do nothing, we hold the violence!
+        button3State = digitalRead(button3Pin);
+    }
+}
+
 void loop() {
     // check for LED count mode
     if (set_LED_count_mode == true) {
@@ -391,13 +411,21 @@ void loop() {
         return;
     }
     
-    // read color palette input pin here
-    // this line reserved for color palette pin
+    // read pattern engage input pin here
     button2State = digitalRead(button2Pin);
     
     if (button2State == HIGH) {
-        // pauses the colors
+        // pauses the colors now, but will initialize pattern mode
+        // need to grab the current color
         return;
+    }
+    
+    // read white out input pin here
+    button3State = digitalRead(button3Pin);
+    
+    if (button3State == HIGH) {
+        // engage violence mode!
+        engageViolence();
     }
     
     // check if palette changed
