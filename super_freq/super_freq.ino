@@ -12,7 +12,7 @@
  * for mixers.
  */
 #define MIN_FFT_SUM 400
-#define MIN_PEAK_VALUE 48
+#define MIN_PEAK_VALUE 30
 
 // Some FFT constants
 #define SAMPLE_RATE 9600
@@ -31,7 +31,7 @@ int sum_fft;
 float frequency;  // only used for debugging
 
 // LEDeez
-int nLEDs = 160;  // Number of RGB LEDs in strand
+int nLEDs = 32;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 
@@ -226,8 +226,13 @@ const struct Color palettes[144] PROGMEM = {
     
 };
 
+// palette vars
 Color color_palette[24];
-byte palette_choice = 0;  // there's 2 palettes: choose 0 or 1
+byte palette_choice = 0;
+
+// pattern vars
+byte pattern_choice = 2;
+boolean shimmy_even = true;
 
 void setup() {
     if (DEBUG) {
@@ -244,7 +249,7 @@ void setup() {
         set_LED_count_mode = true;
     }
     
-    TIMSK0 = 0;           // turn off timer0 for lower jitter
+    //TIMSK0 = 0;           // turn off timer0 for lower jitter
     ADCSRA = 0xe5;        // set the adc to free running mode 
     ADMUX = 0x40;         // use adc0
     DIDR0 = 0x01;         // turn off the digital input for adc0
@@ -393,11 +398,80 @@ void engageViolence() {
             strip.setPixelColor(i, strip_color);
         }
         strip.show();
+        delay(10);
     }
     
     while (button3State == HIGH) {
         // do nothing, we hold the violence!
         button3State = digitalRead(button3Pin);
+    }
+}
+
+// start pattern functions
+void bullet() {
+    // a single LED running fast across the strip
+    int j = 0;
+    while (button2State == HIGH) {
+        for (int i=0; i < strip.numPixels(); i++) {
+            if (i==j) {
+                strip.setPixelColor(i, strip_color);
+            } else {
+                strip.setPixelColor(i, strip.Color(0, 0, 0));
+            }
+        }
+        strip.show();
+        delay(10);
+        j++;
+        if (j >= strip.numPixels()) {
+            j = 0;
+        }
+        button2State = digitalRead(button2Pin);
+    }
+}
+
+void snail() {
+    // a single LED running slow across the strip
+    int j = 0;
+    while (button2State == HIGH) {
+        for (int i=0; i < strip.numPixels(); i++) {
+            if (i==j) {
+                strip.setPixelColor(i, strip_color);
+            } else {
+                strip.setPixelColor(i, strip.Color(0, 0, 0));
+            }
+        }
+        strip.show();
+        delay(250);
+        j++;
+        if (j >= strip.numPixels()) {
+            j = 0;
+        }
+        button2State = digitalRead(button2Pin);
+    }
+}
+
+void shimmy() {
+    // odds then evens
+    while (button2State == HIGH) {
+        for (int i=0; i < strip.numPixels(); i++) {
+            if (shimmy_even) {
+                if (i%2) {
+                    strip.setPixelColor(i, strip_color);
+                } else {
+                    strip.setPixelColor(i, strip.Color(0, 0, 0));
+                }
+            } else {
+                if (i%2) {
+                    strip.setPixelColor(i, strip.Color(0, 0, 0));
+                } else {
+                    strip.setPixelColor(i, strip_color);
+                }
+            }
+        }
+        shimmy_even = !shimmy_even;
+        strip.show();
+        delay(100);
+        button2State = digitalRead(button2Pin);
     }
 }
 
@@ -415,9 +489,38 @@ void loop() {
     button2State = digitalRead(button2Pin);
     
     if (button2State == HIGH) {
-        // pauses the colors now, but will initialize pattern mode
-        // need to grab the current color
-        return;
+        // initialize pattern mode
+        if (DEBUG) {
+            Serial.println("Initialize pattern!");
+        }
+        switch (pattern_choice) {
+            case 0:
+                bullet();
+            case 1:
+                snail();
+            case 2:
+                shimmy();
+            case 3:
+                bullet();
+            case 4:
+                bullet();
+            case 5:
+                bullet();
+            case 6:
+                bullet();
+            case 7:
+                bullet();
+            case 8:
+                bullet();
+            case 9:
+                bullet();
+            case 10:
+                bullet();
+            case 11:
+                bullet();
+            default:
+                break;
+        }
     }
     
     // read white out input pin here
