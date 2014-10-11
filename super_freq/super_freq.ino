@@ -231,7 +231,7 @@ Color color_palette[24];
 byte palette_choice = 0;
 
 // pattern vars
-byte pattern_choice = 2;
+byte pattern_choice = 3;
 boolean shimmy_even = true;
 
 void setup() {
@@ -451,7 +451,7 @@ void snail() {
 }
 
 void shimmy() {
-    // odds then evens
+    // evens then odds
     while (button2State == HIGH) {
         for (int i=0; i < strip.numPixels(); i++) {
             if (shimmy_even) {
@@ -471,6 +471,39 @@ void shimmy() {
         shimmy_even = !shimmy_even;
         strip.show();
         delay(100);
+        button2State = digitalRead(button2Pin);
+    }
+}
+
+void fountain() {
+    // start in the middle and grow both sides
+    
+    while (button2State == HIGH) {
+
+        // first, turn all the lights off
+        for (int i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(0, 0, 0));
+        }
+        strip.show();
+        
+        for (int i=0; i < (strip.numPixels() / 2); i++) {
+            
+            // pattern differs for odd vs even LED lengths
+            // if even we start with the middle 2 LEDs, 
+            // for odd just the 1 middle LED
+            if (strip.numPixels() % 2) {
+                // it's an odd number light up the one middle LED
+                strip.setPixelColor(strip.numPixels() / 2 - i, strip_color);
+                strip.setPixelColor(strip.numPixels() / 2 + i, strip_color);
+            } else {
+                // it's an even number we have to start from the middle 2 LEDs
+                strip.setPixelColor(strip.numPixels() / 2 - i - 1, strip_color);
+                strip.setPixelColor(strip.numPixels() / 2 + i, strip_color);
+            }
+            strip.show();
+            delay(60 + (2 * i)); // get progressively slower each iteration
+        }
+
         button2State = digitalRead(button2Pin);
     }
 }
@@ -501,7 +534,7 @@ void loop() {
             case 2:
                 shimmy();
             case 3:
-                bullet();
+                fountain();
             case 4:
                 bullet();
             case 5:
