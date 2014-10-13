@@ -31,7 +31,7 @@ int sum_fft;
 float frequency;  // only used for debugging
 
 // LEDeez
-int nLEDs = 160;  // Number of RGB LEDs in strand
+int nLEDs = 32;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 
@@ -229,7 +229,7 @@ Color color_palette[24];
 byte palette_choice = 0;
 
 // pattern vars
-byte pattern_choice = 0;
+byte pattern_choice = 3;
 boolean shimmy_even = true;
 
 void setup() {
@@ -499,7 +499,7 @@ void fountain() {
                 strip.setPixelColor(strip.numPixels() / 2 + i, strip_color);
             }
             strip.show();
-            delay(60 + (2 * i)); // get progressively slower each iteration
+            delay(50);
         }
 
         button2State = digitalRead(button2Pin);
