@@ -1,6 +1,6 @@
 #define LIN_OUT 1 // use the linear output function
 #define FFT_N 128 // set number of FFT points
-#define DEBUG 1   // set to 1 to turn on Serial printing
+#define DEBUG 0   // set to 1 to turn on Serial printing
 
 /*
  * Used to turn off the lights for low volumes 
@@ -319,17 +319,17 @@ void setColor(int peak_index, int brightness) {
     }
     
     strip_color = strip.Color(
-        round(red   * brightness / 127),
-        round(green * brightness / 127),
-        round(blue  * brightness / 127)
+        round((red   / 100.0) * brightness),
+        round((green / 100.0) * brightness),
+        round((blue  / 100.0) * brightness)
     );
     
     if (DEBUG) {
-        Serial.print(color_palette[peak_index - 1].red);
+        Serial.print((red / 100.0) * brightness);
         Serial.print("\t");
-        Serial.print(color_palette[peak_index - 1].green);
+        Serial.print((green / 100.0) * brightness);
         Serial.print("\t");
-        Serial.println(color_palette[peak_index - 1].blue);
+        Serial.println((blue / 100.0) * brightness);
     }
     
     for (int i=0; i < strip.numPixels(); i++) {
