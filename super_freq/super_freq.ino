@@ -229,8 +229,10 @@ Color color_palette[24];
 byte palette_choice = 0;
 
 // pattern vars
-byte pattern_choice = 3;
+byte pattern_choice = 4;
 boolean shimmy_even = true;
+boolean bitrot_rotten = false;
+int bitrot_led;
 
 void setup() {
     if (DEBUG) {
@@ -506,6 +508,44 @@ void fountain() {
     }
 }
 
+void bitrot() {
+    // start with all lights on w/ current color then
+    // randomly turn off one light at a time until all
+    // are gone
+        
+    while (button2State == HIGH) {
+        
+        // reset the LEDs to the current color in case the button
+        // is held past one bitrot cycle
+        for (int i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip_color);
+        }       
+        
+        while (!bitrot_rotten) {       
+            // chose a random LED
+            bitrot_led = rand()%strip.numPixels();
+            strip.setPixelColor(bitrot_led, strip.Color(0, 0, 0));
+            strip.show();
+            
+            delay(10);
+            
+            // check if all lights are off
+            for (int i=0; i < strip.numPixels(); i++) {
+                if (strip.getPixelColor(i) > 0) {
+                    // found a lit LED, not all off yet
+                    bitrot_rotten = false;
+                    break;
+                } else {
+                    bitrot_rotten = true;
+                }
+            }
+        }
+        
+        bitrot_rotten = false;        
+        button2State = digitalRead(button2Pin);
+    }
+}
+
 void loop() {
     // check for LED count mode
     if (set_LED_count_mode == true) {
@@ -534,7 +574,7 @@ void loop() {
             case 3:
                 fountain();
             case 4:
-                bullet();
+                bitrot();
             case 5:
                 bullet();
             case 6:
