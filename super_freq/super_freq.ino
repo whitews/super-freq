@@ -499,7 +499,7 @@ void fountain() {
                 strip.setPixelColor(strip.numPixels() / 2 + i, strip_color);
             }
             strip.show();
-            delay(50);
+            delay(30);
         }
 
         button2State = digitalRead(button2Pin);
