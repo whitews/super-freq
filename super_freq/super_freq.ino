@@ -31,13 +31,11 @@ int sum_fft;
 float frequency;  // only used for debugging
 
 // LEDeez
-int nLEDs = 32;  // Number of RGB LEDs in strand
+int nLEDs = 160;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 
 // Pins
-byte dataPin  = 2;  // any pin
-byte clockPin = 3;  // any pin
 byte button2Pin = 7;  // any pin
 byte button3Pin = 8;  // any pin
 
@@ -48,9 +46,9 @@ boolean set_LED_count_mode = false;
 boolean increment_LED_count = false;
 
 // First parameter is the number of LEDs in the strand.  The LED strips
-// are 32 LEDs per meter but you can extend or cut the strip.  Next two
-// parameters are SPI data and clock pins:
-LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
+// are 32 LEDs per meter but you can extend or cut the strip.
+// We're using the dedicated data and clock pins, 11 & 13 respectively
+LPD8806 strip = LPD8806(nLEDs);
 uint32_t strip_color = strip.Color(0, 0, 0);
 
 // Color stuff
@@ -231,7 +229,7 @@ Color color_palette[24];
 byte palette_choice = 0;
 
 // pattern vars
-byte pattern_choice = 3;
+byte pattern_choice = 0;
 boolean shimmy_even = true;
 
 void setup() {
