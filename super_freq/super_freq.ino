@@ -229,10 +229,12 @@ Color color_palette[24];
 byte palette_choice = 0;
 
 // pattern vars
-byte pattern_choice = 4;
+byte pattern_choice = 5;
 boolean shimmy_even = true;
 boolean bitrot_rotten = false;
 int bitrot_led;
+byte swell_brightness = 0;
+boolean swell_up = true;
 
 void setup() {
     if (DEBUG) {
@@ -546,6 +548,41 @@ void bitrot() {
     }
 }
 
+void swell() {
+    // use current color and pulse the brightness
+    swell_brightness = brightness;
+        
+    while (button2State == HIGH) {      
+
+        for (int i=0; i < strip.numPixels(); i++) {
+            
+            strip.setPixelColor(i, 
+                strip.Color(
+                    round((red   / 100.0) * swell_brightness),
+                    round((green / 100.0) * swell_brightness),
+                    round((blue  / 100.0) * swell_brightness)
+                )
+            );
+        }
+                
+        strip.show();        
+        
+        if (swell_brightness >= 127) {
+            swell_up = false;
+        } else if (swell_brightness <=15) {
+            swell_up = true;
+        }
+        
+        if (swell_up) {
+            swell_brightness++;
+        } else {
+            swell_brightness--;
+        }
+        
+        button2State = digitalRead(button2Pin);
+    }
+}
+
 void loop() {
     // check for LED count mode
     if (set_LED_count_mode == true) {
@@ -576,7 +613,7 @@ void loop() {
             case 4:
                 bitrot();
             case 5:
-                bullet();
+                swell();
             case 6:
                 bullet();
             case 7:
@@ -651,6 +688,7 @@ void loop() {
     }
     
     setColor(peak_index, brightness);
+    delay(40);
             
     if (DEBUG) {
         frequency = peak_index * ((1.0 * SAMPLE_RATE / (SKIP_MULT / 2)) / (FFT_N / 2));
