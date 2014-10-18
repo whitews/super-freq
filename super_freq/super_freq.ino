@@ -569,7 +569,7 @@ void bitgarden() {
     // So, if we check our strip_color to determine if
     // the current color is "off" we would have to do
     // some bit shifting and bit masking. Instead,
-    // we just read the first LED instead.
+    // we just read the first LED.
     if (strip.getPixelColor(0) <= 0) {
         return;
     }
