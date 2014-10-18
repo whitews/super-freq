@@ -555,6 +555,25 @@ void bitgarden() {
     // turn on one light at a time w/ current color
     // until all are lit
     
+    // Check if the current strip_color is "off" to
+    // avoid an infinite loop...we can turn "on" all
+    // the LEDs to the current color if there is no
+    // current color!
+    //
+    // However, it's a bit weird! (pun intended)
+    // The strip_color value has each color component
+    // 7-bit value stored as 8 bits with the high bit
+    // set to 1, BUT if you read a particular LED
+    // using getPixelColor that high bit is set to 0
+    //
+    // So, if we check our strip_color to determine if
+    // the current color is "off" we would have to do
+    // some bit shifting and bit masking. Instead,
+    // we just read the first LED instead.
+    if (strip.getPixelColor(0) <= 0) {
+        return;
+    }
+    
     while (button2State == HIGH) {
         
         // turn off all LEDs 
@@ -562,6 +581,7 @@ void bitgarden() {
             strip.setPixelColor(i, strip.Color(0, 0, 0));
         }
         
+        // keep looping while bitgarden_grew is false
         while (!bitgarden_grew) {       
             // chose a random LED
             bitgarden_led = rand()%strip.numPixels();
