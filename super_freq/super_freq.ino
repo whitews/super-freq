@@ -375,7 +375,6 @@ void setLEDcount() {
         }
         
         if (increment_LED_count) {
-            Serial.println("Button pressed!");
             nLEDs++;
             strip.updateLength(nLEDs);
             strip_color = strip.Color(127, 127, 127);
