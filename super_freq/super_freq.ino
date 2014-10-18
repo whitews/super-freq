@@ -229,10 +229,14 @@ Color color_palette[24];
 byte palette_choice = 0;
 
 // pattern vars
-byte pattern_choice = 4;
+byte pattern_choice = 5;
 boolean shimmy_even = true;
 boolean bitrot_rotten = false;
 int bitrot_led;
+boolean bitgarden_grew = false;
+int bitgarden_led;
+byte swell_brightness = 0;
+boolean swell_up = true;
 
 void setup() {
     if (DEBUG) {
@@ -319,17 +323,17 @@ void setColor(int peak_index, int brightness) {
     }
     
     strip_color = strip.Color(
-        round(red   * brightness / 127),
-        round(green * brightness / 127),
-        round(blue  * brightness / 127)
+        round((red   / 100.0) * brightness),
+        round((green / 100.0) * brightness),
+        round((blue  / 100.0) * brightness)
     );
     
     if (DEBUG) {
-        Serial.print(color_palette[peak_index - 1].red);
+        Serial.print((red / 100.0) * brightness);
         Serial.print("\t");
-        Serial.print(color_palette[peak_index - 1].green);
+        Serial.print((green / 100.0) * brightness);
         Serial.print("\t");
-        Serial.println(color_palette[peak_index - 1].blue);
+        Serial.println((blue / 100.0) * brightness);
     }
     
     for (int i=0; i < strip.numPixels(); i++) {
@@ -546,6 +550,78 @@ void bitrot() {
     }
 }
 
+void bitgarden() {
+    // start with all lights off w/ then randomly
+    // turn on one light at a time w/ current color
+    // until all are lit
+    
+    while (button2State == HIGH) {
+        
+        // turn off all LEDs 
+        for (int i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(0, 0, 0));
+        }
+        
+        while (!bitgarden_grew) {       
+            // chose a random LED
+            bitgarden_led = rand()%strip.numPixels();
+            strip.setPixelColor(bitgarden_led, strip_color);
+            strip.show();
+            
+            delay(10);
+            
+            // check if all lights are off
+            for (int i=0; i < strip.numPixels(); i++) {
+                if (strip.getPixelColor(i) <= 0) {
+                    // found a blank LED, not all on yet
+                    bitgarden_grew = false;
+                    break;
+                } else {
+                    bitgarden_grew = true;
+                }
+            }
+        }
+        
+        bitgarden_grew = false;        
+        button2State = digitalRead(button2Pin);
+    }
+}
+
+void swell() {
+    // use current color and pulse the brightness
+    swell_brightness = brightness;
+        
+    while (button2State == HIGH) {      
+
+        for (int i=0; i < strip.numPixels(); i++) {
+            
+            strip.setPixelColor(i, 
+                strip.Color(
+                    round((red   / 100.0) * swell_brightness),
+                    round((green / 100.0) * swell_brightness),
+                    round((blue  / 100.0) * swell_brightness)
+                )
+            );
+        }
+                
+        strip.show();        
+        
+        if (swell_brightness >= 127) {
+            swell_up = false;
+        } else if (swell_brightness <=15) {
+            swell_up = true;
+        }
+        
+        if (swell_up) {
+            swell_brightness++;
+        } else {
+            swell_brightness--;
+        }
+        
+        button2State = digitalRead(button2Pin);
+    }
+}
+
 void loop() {
     // check for LED count mode
     if (set_LED_count_mode == true) {
@@ -576,9 +652,9 @@ void loop() {
             case 4:
                 bitrot();
             case 5:
-                bullet();
+                bitgarden();
             case 6:
-                bullet();
+                swell();
             case 7:
                 bullet();
             case 8:
@@ -651,6 +727,7 @@ void loop() {
     }
     
     setColor(peak_index, brightness);
+    delay(40);
             
     if (DEBUG) {
         frequency = peak_index * ((1.0 * SAMPLE_RATE / (SKIP_MULT / 2)) / (FFT_N / 2));
