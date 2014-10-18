@@ -1,6 +1,6 @@
 #define LIN_OUT 1 // use the linear output function
 #define FFT_N 128 // set number of FFT points
-#define DEBUG 0   // set to 1 to turn on Serial printing
+#define DEBUG 1   // set to 1 to turn on Serial printing
 
 /*
  * Used to turn off the lights for low volumes 
@@ -554,17 +554,17 @@ void bitgarden() {
     // start with all lights off w/ then randomly
     // turn on one light at a time w/ current color
     // until all are lit
-        
+    
     while (button2State == HIGH) {
         
         // turn off all LEDs 
         for (int i=0; i < strip.numPixels(); i++) {
             strip.setPixelColor(i, strip.Color(0, 0, 0));
-        }       
+        }
         
         while (!bitgarden_grew) {       
             // chose a random LED
-            bitrot_led = rand()%strip.numPixels();
+            bitgarden_led = rand()%strip.numPixels();
             strip.setPixelColor(bitgarden_led, strip_color);
             strip.show();
             
@@ -572,7 +572,7 @@ void bitgarden() {
             
             // check if all lights are off
             for (int i=0; i < strip.numPixels(); i++) {
-                if (strip.getPixelColor(i) == 0) {
+                if (strip.getPixelColor(i) <= 0) {
                     // found a blank LED, not all on yet
                     bitgarden_grew = false;
                     break;
