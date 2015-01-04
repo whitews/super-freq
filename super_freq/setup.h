@@ -8,7 +8,8 @@ int button2State = 0;
 int button3State = 0;
 
 // LEDeez
-int nLEDs = 32;  // Number of RGB LEDs in strand
+//  Why is the MAX LED number 363?  
+int nLEDs = 363;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 
@@ -22,8 +23,9 @@ boolean set_LED_count_mode = false;
 boolean increment_LED_count = false;
 
 // User selection vars
-byte palette_choice = 0;
-byte pattern_choice = 5;
+// The palette choice variable extends far beyond out given number of palettes, and the selection does not match the palette.
+byte palette_choice = 22;
+byte pattern_choice = 2;
 
 void setLEDcount() {
     button3State = digitalRead(button3Pin);

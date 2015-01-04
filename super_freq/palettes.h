@@ -13,6 +13,7 @@ byte palette_color_count = 24;
 Color color_palette[24];
 
 // each palette is 24 colors, all are stored in the same array
+// I changed a few palettes.  Dig
 const struct Color palettes[144] PROGMEM = {
     // 1st palette: full spectrum of colors
     {  25,   0, 100 },  // indigo
@@ -43,29 +44,29 @@ const struct Color palettes[144] PROGMEM = {
     // 2nd palette: warm colors
     { 100, 100,   0 },  // yellow
     { 100, 100,   0 },  // yellow
-    { 100, 100,   0 },  // yellow
-    { 100, 100,   0 },  // yellow
     { 100,  50,   0 },  // orange
     { 100,  50,   0 },  // orange
-    { 100,  50,   0 },  // orange
-    { 100,  50,   0 },  // orange
+    { 100,  50,   0 },  // med. orange
+    { 100,  50,   0 },  // med. orange
+    { 100,  25,   0 },  // dark orange
+    { 100,  25,   0 },  // dark orange
     { 100,   0,   0 },  // red
     { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
+    { 100,   0,  25 },  // pink
+    { 100,   0,  25 },  // pink
+    { 100,   0,  50 },  // bright pink
+    { 100,   0,  50 },  // bright pink
+    { 100,   0,  75 },  // hot pink
+    { 100,   0,  75 },  // hot pink
     { 100,   0, 100 },  // purple
     { 100,   0, 100 },  // purple
-    { 100,   0, 100 },  // purple
-    { 100,   0, 100 },  // purple
-    { 100,  50, 100 },  // hot purple
-    { 100,  50, 100 },  // hot purple
     { 100,  50, 100 },  // hot purple
     { 100,  50, 100 },  // hot purple
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
     { 100, 100, 100 },  // white hot
-     
+    
      // 3rd palette: Blue Orange
     {   0,   0, 100 },  // blue
     {   0,   0, 100 },  // blue
@@ -93,30 +94,30 @@ const struct Color palettes[144] PROGMEM = {
     { 100,  50,   0 },  // orange
     
     // 4th palette: brights, less yellows
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
-    { 100,  10, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
+    { 100,  50, 100 },  // hot purple
     
     // 5th palette: Rat Fink 
     {   0, 100,   0 },  // green
@@ -144,31 +145,32 @@ const struct Color palettes[144] PROGMEM = {
     {   0, 100,   0 },  // green
     { 100,   0,  25 },  // pink
    
-    // 6th palette: Simply Red.
+    // 6th palette: Red Shift
     { 100,   0,   0 },  // red
     { 100,   0,   0 },  // red
     { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
+    { 100,   0,   10 },  // red
+    { 100,   0,   10 },  // red
+    { 100,   0,   20 },  // red
+    { 100,   0,   20 },  // red
+    { 100,   0,   30 },  // red
+    { 100,   0,   30 },  // red
+    { 100,   0,   40 },  // red
+    { 100,   0,   40 },  // red
+    { 100,   0,   50 },  // red
+    { 100,   0,   50 },  // red
+    { 100,   0,   50 },  // red
+    { 100,   0,   60 },  // red
+    { 100,   0,   60 },  // red
+    { 100,   0,   70 },  // red
+    { 100,   0,   70 },  // red
+    { 100,   0,   80 },  // red
+    { 100,   0,   80 },  // red
+    { 100,   0,   90 },  // red
+    { 100,   0,   90 },  // red
     { 100,   0,   0 },  // red
     { 100,   0,   0 }   // red
     
 };
+
 
