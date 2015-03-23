@@ -21,9 +21,9 @@ void engageViolence() {
         delay(10);
     }
     
-    while (button3State == HIGH) {
+    while (white_out_button_state == HIGH) {
         // do nothing, we hold the violence!
-        button3State = digitalRead(button3Pin);
+        white_out_button_state = digitalRead(white_out_button_pin);
     }
 }
 
@@ -31,7 +31,7 @@ void engageViolence() {
 void bullet() {
     // a single LED running fast across the strip
     int j = 0;
-    while (button2State == HIGH) {
+    while (pattern_button_state == HIGH) {
         for (int i=0; i < strip.numPixels(); i++) {
             if (i==j) {
                 strip.setPixelColor(i, strip_color);
@@ -45,14 +45,14 @@ void bullet() {
         if (j >= strip.numPixels()) {
             j = 0;
         }
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
 
 void snail() {
     // a single LED running slow across the strip
     int j = 0;
-    while (button2State == HIGH) {
+    while (pattern_button_state == HIGH) {
         for (int i=0; i < strip.numPixels(); i++) {
             if (i==j) {
                 strip.setPixelColor(i, strip_color);
@@ -66,13 +66,13 @@ void snail() {
         if (j >= strip.numPixels()) {
             j = 0;
         }
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
 
 void shimmy() {
     // evens then odds
-    while (button2State == HIGH) {
+    while (pattern_button_state == HIGH) {
         for (int i=0; i < strip.numPixels(); i++) {
             if (shimmy_even) {
                 if (i%2) {
@@ -91,14 +91,14 @@ void shimmy() {
         shimmy_even = !shimmy_even;
         strip.show();
         delay(100);
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
 
 void fountain() {
     // start in the middle and grow both sides
     
-    while (button2State == HIGH) {
+    while (pattern_button_state == HIGH) {
 
         // first, turn all the lights off
         for (int i=0; i < strip.numPixels(); i++) {
@@ -124,7 +124,7 @@ void fountain() {
             delay(30);
         }
 
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
 
@@ -133,7 +133,7 @@ void bitrot() {
     // randomly turn off one light at a time until all
     // are gone
         
-    while (button2State == HIGH) {
+    while (pattern_button_state == HIGH) {
         
         // reset the LEDs to the current color in case the button
         // is held past one bitrot cycle
@@ -162,7 +162,7 @@ void bitrot() {
         }
         
         bitrot_rotten = false;        
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
 
@@ -190,7 +190,7 @@ void bitgarden() {
         return;
     }
     
-    while (button2State == HIGH) {
+    while (pattern_button_state == HIGH) {
         
         // turn off all LEDs 
         for (int i=0; i < strip.numPixels(); i++) {
@@ -219,7 +219,7 @@ void bitgarden() {
         }
         
         bitgarden_grew = false;        
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
 
@@ -227,7 +227,7 @@ void swell() {
     // use current color and pulse the brightness
     swell_brightness = brightness;
         
-    while (button2State == HIGH) {      
+    while (pattern_button_state == HIGH) {      
 
         for (int i=0; i < strip.numPixels(); i++) {
             
@@ -254,6 +254,6 @@ void swell() {
             swell_brightness--;
         }
         
-        button2State = digitalRead(button2Pin);
+        pattern_button_state = digitalRead(pattern_button_pin);
     }
 }

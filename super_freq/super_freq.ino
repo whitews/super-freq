@@ -26,13 +26,13 @@ void setup() {
         Serial.begin(9600);
     }
     
-    pinMode(button2Pin, INPUT);
-    pinMode(button3Pin, INPUT);
+    pinMode(pattern_button_pin, INPUT);
+    pinMode(white_out_button_pin, INPUT);
     
     // check for button press to enter LED count set mode
-    button3State = digitalRead(button3Pin);
+    white_out_button_state = digitalRead(white_out_button_pin);
     
-    if (button3State == HIGH) {
+    if (white_out_button_state == HIGH) {
         set_LED_count_mode = true;
     }
     
@@ -142,9 +142,9 @@ void loop() {
     }
     
     // read pattern engage input pin here
-    button2State = digitalRead(button2Pin);
+    pattern_button_state = digitalRead(pattern_button_pin);
     
-    if (button2State == HIGH) {
+    if (pattern_button_state == HIGH) {
         // initialize pattern mode
         if (DEBUG) {
             Serial.println("Initialize pattern!");
@@ -180,9 +180,9 @@ void loop() {
     }
     
     // read white out input pin here
-    button3State = digitalRead(button3Pin);
+    white_out_button_state = digitalRead(white_out_button_pin);
     
-    if (button3State == HIGH) {
+    if (white_out_button_state == HIGH) {
         // engage violence mode!
         engageViolence();
     }

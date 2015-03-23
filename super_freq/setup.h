@@ -1,11 +1,11 @@
 #define DEBUG 0  // set to 1 to turn on Serial printing
 
 // Pins
-byte button2Pin = 7;  // any pin
-byte button3Pin = 8;  // any pin
+byte pattern_button_pin = 7;  // any digital pin except 2, 3, 11, or 13
+byte white_out_button_pin = 8;  // any digital pin except 2, 3, 11, or 13
 
-int button2State = 0;
-int button3State = 0;
+int pattern_button_state = 0;
+int white_out_button_state = 0;
 
 // LEDeez
 int nLEDs = 32;  // Number of RGB LEDs in strand
@@ -26,7 +26,7 @@ byte palette_choice = 0;
 byte pattern_choice = 5;
 
 void setLEDcount() {
-    button3State = digitalRead(button3Pin);
+    white_out_button_state = digitalRead(white_out_button_pin);
     nLEDs = 1;
     strip.updateLength(nLEDs);
     strip_color = strip.Color(127, 127, 127);
@@ -37,24 +37,24 @@ void setLEDcount() {
     
     // button 3 may still be pressed since the code gets here very fast
     // if button 1 is pressed, wait will the user releases it
-    while (button3State == HIGH) {
+    while (white_out_button_state == HIGH) {
         // do nothing, we need to wait until user releases the button
-        button3State = digitalRead(button3Pin);
+        white_out_button_state = digitalRead(white_out_button_pin);
     }
     
     // button 2 is used to exit the LED count set mode
-    while (button2State == LOW) {
-        button2State = digitalRead(button2Pin);
-        button3State = digitalRead(button3Pin);
+    while (pattern_button_state == LOW) {
+        pattern_button_state = digitalRead(pattern_button_pin);
+        white_out_button_state = digitalRead(white_out_button_pin);
         increment_LED_count = false;
         
-        if (button3State == HIGH) {
+        if (white_out_button_state == HIGH) {
             increment_LED_count = true;
         }
         
-        while (button3State == HIGH) {
+        while (white_out_button_state == HIGH) {
             // do nothing, we need to wait until user releases the button
-            button3State = digitalRead(button3Pin);
+            white_out_button_state = digitalRead(white_out_button_pin);
         }
         
         if (increment_LED_count) {
