@@ -20,6 +20,7 @@ int peak_index;
 int max_value;
 int sum_fft;
 float frequency;  // only used for debugging
+byte low_byte;
 
 void setup() {
     if (DEBUG) {
@@ -36,10 +37,14 @@ void setup() {
         set_LED_count_mode = true;
     }
     
-    //TIMSK0 = 0;           // turn off timer0 for lower jitter
-    ADCSRA = 0xe5;        // set the adc to free running mode 
-    ADMUX = 0x40;         // use adc0
-    DIDR0 = 0x01;         // turn off the digital input for adc0
+    // set ADC to free running mode w/ prescaler set to a 
+    // division factor of 32 (B101)
+    ADCSRA = B11100101;
+    
+    ADMUX = B01000000;  // use adc0
+    
+    // turn off the digital input for all analog pins
+    DIDR0 = B00111111;
     
     // initial color palette
     for (int i = 0; i < 24; i++) {
@@ -76,13 +81,12 @@ void calculateFFT() {
          * SAMPLE_RATE / (SKIP_MULT / 2)
          */
         for (int j = 0; j < SKIP_MULT; j++) {
-            while(!(ADCSRA & 0x10)); // wait for adc to be ready
-            ADCSRA = 0xf5;           // restart adc
+            while(!(ADCSRA & B00010000)); // wait for adc to be ready
+            ADCSRA = B11110101;           // restart adc
         }
 
-        byte m = ADCL;             // fetch ADC data (low byte)
-        byte j = ADCH;             // fetch ADC data (high byte)
-        int k = (j << 8) | m;      // combine low/high bytes to form into an int
+        low_byte = ADCL;           // fetch ADC data (low byte)
+        int k = (ADCH << 8) | low_byte;  // combine low/high bytes to form into an int
         k -= 0x0200;               // form into a signed int
         k <<= 6;                   // form into a 16b signed int
         fft_input[i] = k;          // put real data into even bins
