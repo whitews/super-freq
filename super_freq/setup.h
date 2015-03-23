@@ -1,4 +1,4 @@
-#define DEBUG 0  // set to 1 to turn on Serial printing
+#define DEBUG 1  // set to 1 to turn on Serial printing
 
 // Pins
 byte pattern_button_pin = 7;  // any digital pin except 2, 3, 11, or 13
@@ -6,6 +6,9 @@ byte white_out_button_pin = 8;  // any digital pin except 2, 3, 11, or 13
 
 int pattern_button_state = 0;
 int white_out_button_state = 0;
+
+// Interrupt flags
+volatile boolean palette_switch_flag = false;
 
 // LEDeez
 int nLEDs = 32;  // Number of RGB LEDs in strand
@@ -22,6 +25,9 @@ boolean set_LED_count_mode = false;
 boolean increment_LED_count = false;
 
 // User selection vars
+int input_A1;
+byte selection_A1;
+byte new_palette_choice;
 byte palette_choice = 0;
 byte pattern_choice = 5;
 

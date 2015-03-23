@@ -14,18 +14,21 @@
 #include "setup.h"
 #include "palettes.h"
 #include "patterns.h"
-
-// FFT vars
-int peak_index;
-int max_value;
-int sum_fft;
-float frequency;  // only used for debugging
-byte low_byte;
+#include "interface_controllers.h"
+#include "fft_controllers.h"
+#include "light_strip_controllers.h"
 
 void setup() {
     if (DEBUG) {
         Serial.begin(9600);
     }
+    
+    // pull down for palette change interrupt pin
+    digitalWrite(2, LOW);
+    
+    // setup interrupt 0 (digital pin 2) to detect changed palette 
+    // rotary switch position
+    attachInterrupt(0, palette_switch_changed, LOW);
     
     pinMode(pattern_button_pin, INPUT);
     pinMode(white_out_button_pin, INPUT);
@@ -66,75 +69,6 @@ void setup() {
     strip.show();
 }
 
-void calculateFFT() {
-    for (int i = 0 ; i < FFT_N * 2; i += 2) { // save samples
-        /* 
-         * A hack to sample at a slower rate. 
-         * The minimum sample rate is 9.6 kHz, so reduce sample rate 
-         * by skipping ADC read cycles, essentially spreading out our
-         * sample over time. Reducing the sample rate increases our
-         * frequency resolution, so we can differentiate frequencies 
-         * close to one another, but at the expense of not detecting higher 
-         * frequencies.
-         * 
-         * The effective sample rate would then be:
-         * SAMPLE_RATE / (SKIP_MULT / 2)
-         */
-        for (int j = 0; j < SKIP_MULT; j++) {
-            while(!(ADCSRA & B00010000)); // wait for adc to be ready
-            ADCSRA = B11110101;           // restart adc
-        }
-
-        low_byte = ADCL;           // fetch ADC data (low byte)
-        int k = (ADCH << 8) | low_byte;  // combine low/high bytes to form into an int
-        k -= 0x0200;               // form into a signed int
-        k <<= 6;                   // form into a 16b signed int
-        fft_input[i] = k;          // put real data into even bins
-        fft_input[i+1] = 0;        // set odd bins to 0
-    }
-    fft_window();                  // window the data for better frequency response
-    fft_reorder();                 // reorder the data before doing the fft
-    fft_run();                     // process the data in the fft
-    fft_mag_lin();                 // take the output of the fft
-}
-
-// Set color based on frequency and brightness
-void setColor(int peak_index, int brightness) {
-    if (peak_index == 0) {
-        // signal was weak, turn lights off
-        red = 0;
-        green = 0;
-        blue = 0;
-    } else if (peak_index > 24) {
-        red = color_palette[23].red;
-        green = color_palette[23].green;
-        blue = color_palette[23].blue;  
-    } else {
-        red = color_palette[peak_index - 1].red;
-        green = color_palette[peak_index - 1].green;
-        blue = color_palette[peak_index - 1].blue;        
-    }
-    
-    strip_color = strip.Color(
-        round((red   / 100.0) * brightness),
-        round((green / 100.0) * brightness),
-        round((blue  / 100.0) * brightness)
-    );
-    
-    if (DEBUG) {
-        Serial.print((red / 100.0) * brightness);
-        Serial.print("\t");
-        Serial.print((green / 100.0) * brightness);
-        Serial.print("\t");
-        Serial.println((blue / 100.0) * brightness);
-    }
-    
-    for (int i=0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, strip_color);
-    }
-    strip.show();
-}
-
 void loop() {
     // check for LED count mode
     if (set_LED_count_mode == true) {
@@ -143,6 +77,21 @@ void loop() {
         }
         setLEDcount();
         return;
+    }
+    
+    if (palette_switch_flag) {
+        // disable palette rotary switch interrupt 
+        // while we determine switch values
+        detachInterrupt(0);
+        
+        input_A1 = read_analog_pin(A1);
+        new_palette_choice = determine_switch_selection(input_A1);
+       	changeColorPalette();
+       	
+        palette_switch_flag = false;
+        
+        // re-enable palette switch interrupt
+        attachInterrupt(0, palette_switch_changed, LOW);
     }
     
     // read pattern engage input pin here
