@@ -4,8 +4,8 @@
 #define MAX_FFT_BIN 32767
 #define LIN_OUT 1          // use the linear output function
 #define FFT_N 128          // set number of FFT points
-#define MIN_FFT_SUM 400    // Used to turn off the lights for low volumes
-#define MIN_PEAK_VALUE 30  // Used to turn off the lights for low volumes
+#define MIN_FFT_SUM 2000    // Used to turn off the lights for low volumes
+#define MIN_PEAK_VALUE 200  // Used to turn off the lights for low volumes
 
 #include <math.h>
 #include <FFT.h>
@@ -158,19 +158,19 @@ void loop() {
     peak_index = 0;
     max_value = 0;
     sum_fft = 0;
-
-    for (int i=0; i < (FFT_N / 2); i++) {
+    
+    // iterate over all bins except the first bin, 
+    // as the first one's the total power in the sample
+    for (int i=1; i < (FFT_N / 2); i++) {
         if (max_value < fft_lin_out[i]) {
             // peak index determines frequency
             peak_index = i;
             // max value used as an additional check to turn the lights off
             max_value = fft_lin_out[i];
         }
-        if (i > 0) {
-            // control brightness by summing all bins except the first bin, 
-            // i.e. the total power in the sample
-            sum_fft += fft_lin_out[i];
-        }
+        
+        // control brightness by summing all bins
+        sum_fft += fft_lin_out[i];
     }
 
     // Use sum_fft to determine brightness
