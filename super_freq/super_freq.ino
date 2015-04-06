@@ -4,8 +4,8 @@
 #define MAX_FFT_BIN 32767
 #define LIN_OUT 1          // use the linear output function
 #define FFT_N 128          // set number of FFT points
-#define MIN_FFT_SUM 2000    // Used to turn off the lights for low volumes
-#define MIN_PEAK_VALUE 200  // Used to turn off the lights for low volumes
+#define MIN_FFT_SUM 900    // Used to turn off the lights for low volumes
+#define MIN_PEAK_VALUE 400  // Used to turn off the lights for low volumes
 
 #include <math.h>
 #include <FFT.h>
@@ -189,7 +189,7 @@ void loop() {
     }
     
     setColor(peak_index, brightness);
-    delay(65);
+    delay(20);
             
     if (DEBUG) {
         frequency = peak_index * ((1.0 * SAMPLE_RATE / (SKIP_MULT / 2)) / (FFT_N / 2));
