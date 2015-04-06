@@ -13,7 +13,7 @@ byte palette_color_count = 24;
 Color color_palette[24];
 
 // each palette is 24 colors, all are stored in the same array
-const struct Color palettes[144] PROGMEM = {
+const struct Color palettes[168] PROGMEM = {
     // 1st palette: full spectrum of colors
     {  25,   0, 100 },  // indigo
     {   0,   0, 100 },  // blue
@@ -39,6 +39,32 @@ const struct Color palettes[144] PROGMEM = {
     { 100,   0, 100 },  // purple
     { 100,  50, 100 },  // hot purple
     { 100, 100, 100 },  // white hot
+
+    // 2nd palette: full spectrum of colors 2
+    {  14,   0,  61 },  // microviolet
+    {   0,   0,  83 },  // blue
+    {   0,  15,  63 },  // blue w/ green tint
+    {   0,  27,  47 },  // greenish-blue
+    {   0,  37,  27 },  // bluish-green
+    {   0,  47,  15 },  // cyan
+    {   0,  55,   8 },  // light cyan
+    {   0,  63,   5 },  // sea green
+    {   0,  73,   3 },  // light green
+    {   0,  81,   0 },  // green
+    {  14,  57,   0 },  // lime green
+    {  27,  45,   0 },  // lime
+    {  37,  37,   0 },  // yellow-lime
+    {  47,  27,   0 },  // yellow
+    {  63,  19,   0 },  // orange-yellow
+    {  79,  15,   0 },  // orange
+    {  81,   7,   0 },  // orange-red
+    {  83,   0,   0 },  // red
+    {  80,   0,   2 },  // pink
+    {  73,   0,  11 },  // bright pink
+    {  63,   0,  21 },  // hot pink
+    {  47,   0,  27 },  // purple
+    {  37,   0,  37 },  // hot purple
+    {  27,   0,  47 },  // white hot
 
     // 2nd palette: warm colors
     { 100, 100,   0 },  // yellow
