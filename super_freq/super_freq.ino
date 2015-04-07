@@ -26,9 +26,16 @@ void setup() {
     // pull down for palette change interrupt pin
     digitalWrite(2, LOW);
     
+    // pull down for pattern change interrupt pin
+    digitalWrite(2, LOW);
+    
     // setup interrupt 0 (digital pin 2) to detect changed palette 
     // rotary switch position
     attachInterrupt(0, palette_switch_changed, LOW);
+    
+    // setup interrupt 1 (digital pin 3) to detect changed pattern 
+    // rotary switch position
+    attachInterrupt(1, pattern_switch_changed, LOW);
     
     pinMode(pattern_button_pin, INPUT);
     pinMode(white_out_button_pin, INPUT);
@@ -86,12 +93,31 @@ void loop() {
         
         input_A1 = read_analog_pin(A1);
         new_palette_choice = determine_switch_selection(input_A1);
-       	changeColorPalette();
-       	
+        changeColorPalette();
+        
+        if (DEBUG) {
+            Serial.print("Analog value: ");
+            Serial.println(input_A1);
+        }
+        
         palette_switch_flag = false;
         
         // re-enable palette switch interrupt
         attachInterrupt(0, palette_switch_changed, LOW);
+    }
+    
+    if (pattern_switch_flag) {
+        // disable pattern rotary switch interrupt 
+        // while we determine switch values
+        detachInterrupt(1);
+        
+        input_A2 = read_analog_pin(A2);
+        pattern_choice = determine_switch_selection(input_A2) - 1;
+        
+        pattern_switch_flag = false;
+        
+        // re-enable pattern switch interrupt
+        attachInterrupt(1, pattern_switch_changed, LOW);
     }
     
     // read pattern engage input pin here
@@ -100,7 +126,10 @@ void loop() {
     if (pattern_button_state == HIGH) {
         // initialize pattern mode
         if (DEBUG) {
-            Serial.println("Initialize pattern!");
+            Serial.print("Analog value: ");
+            Serial.println(input_A2);
+            Serial.print("Initialize pattern: ");
+            Serial.println(pattern_choice);
         }
         switch (pattern_choice) {
             case 0:

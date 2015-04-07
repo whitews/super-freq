@@ -5,6 +5,13 @@ void palette_switch_changed()
     palette_switch_flag = true;
 }
 
+// switch interrupt routine for the pattern rotary switch
+// keep as lean as possible, just set the switch_changed flag
+void pattern_switch_changed()
+{
+    pattern_switch_flag = true;
+}
+
 int read_analog_pin(int pin) {
     // change ADC pin
     if (pin == A1) {

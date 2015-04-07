@@ -9,6 +9,7 @@ int white_out_button_state = 0;
 
 // Interrupt flags
 volatile boolean palette_switch_flag = false;
+volatile boolean pattern_switch_flag = false;
 
 // LEDeez
 int nLEDs = 32;  // Number of RGB LEDs in strand
@@ -26,6 +27,7 @@ boolean increment_LED_count = false;
 
 // User selection vars
 int input_A1;
+int input_A2;
 byte selection_A1;
 byte new_palette_choice;
 byte palette_choice = 0;
