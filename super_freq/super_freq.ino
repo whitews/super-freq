@@ -31,11 +31,11 @@ void setup() {
     
     // setup interrupt 0 (digital pin 2) to detect changed palette 
     // rotary switch position
-    attachInterrupt(0, palette_switch_changed, LOW);
+    attachInterrupt(0, palette_switch_changed, RISING);
     
     // setup interrupt 1 (digital pin 3) to detect changed pattern 
     // rotary switch position
-    attachInterrupt(1, pattern_switch_changed, LOW);
+    attachInterrupt(1, pattern_switch_changed, RISING);
     
     pinMode(pattern_button_pin, INPUT);
     pinMode(white_out_button_pin, INPUT);
@@ -87,10 +87,6 @@ void loop() {
     }
     
     if (palette_switch_flag) {
-        // disable palette rotary switch interrupt 
-        // while we determine switch values
-        detachInterrupt(0);
-        
         input_A1 = read_analog_pin(A1);
         new_palette_choice = determine_switch_selection(input_A1);
         changeColorPalette();
@@ -101,23 +97,18 @@ void loop() {
         }
         
         palette_switch_flag = false;
-        
-        // re-enable palette switch interrupt
-        attachInterrupt(0, palette_switch_changed, LOW);
     }
     
     if (pattern_switch_flag) {
-        // disable pattern rotary switch interrupt 
-        // while we determine switch values
-        detachInterrupt(1);
-        
         input_A2 = read_analog_pin(A2);
         pattern_choice = determine_switch_selection(input_A2) - 1;
         
-        pattern_switch_flag = false;
+        if (DEBUG) {
+            Serial.print("Analog value: ");
+            Serial.println(input_A2);
+        }
         
-        // re-enable pattern switch interrupt
-        attachInterrupt(1, pattern_switch_changed, LOW);
+        pattern_switch_flag = false;
     }
     
     // read pattern engage input pin here
