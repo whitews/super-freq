@@ -22,8 +22,10 @@ int read_analog_pin(int pin) {
     
     // delay is necessary when switching ADC pins,
     // else the other pins will still have non-zero values
-    // it's roughly the 13 ADC clock cycles (104us) w/some padding
-    delay(150);
+    // it's roughly the 13 ADC clock cycles (104us),
+    // but it looks like we can cheat a bit for some performance
+    // improvement
+    delay(60);
     
     byte low_byte = ADCL;
     int value = (ADCH << 8) | low_byte;
@@ -32,46 +34,49 @@ int read_analog_pin(int pin) {
     ADMUX = B01000000;
     
     // we switched pins, so another delay is on order
-    delay(150);
+    delay(60);
     
     return value;
 }
 
 int determine_switch_selection(int analog_value) {
-    if (analog_value >= 600 && analog_value <= 643) {
+    // threshold for digital interrupt is roughly 2.7V of 5V, 
+    // so start at 552...our hardware voltage divider uses a 
+    // 14.7kOhm prior to the 1k(x11) resistor array
+    if (analog_value >= 552 && analog_value <= 599) {
         return 1;
     } 
-    else if (analog_value > 643 && analog_value <= 679) {
+    else if (analog_value > 599 && analog_value <= 639) {
         return 2;
     } 
-    else if (analog_value > 679 && analog_value <= 715) {
+    else if (analog_value > 639 && analog_value <= 678) {
         return 3;
     } 
-    else if (analog_value > 715 && analog_value <= 752) {
+    else if (analog_value > 678 && analog_value <= 718) {
         return 4;
     } 
-    else if (analog_value > 752 && analog_value <= 788) {
+    else if (analog_value > 718 && analog_value <= 757) {
         return 5;
     } 
-    else if (analog_value > 788 && analog_value <= 824) {
+    else if (analog_value > 757 && analog_value <= 797) {
         return 6;
     } 
-    else if (analog_value > 824 && analog_value <= 860) {
+    else if (analog_value > 797 && analog_value <= 838) {
         return 7;
     } 
-    else if (analog_value > 860 && analog_value <= 896) {
+    else if (analog_value > 828 && analog_value <= 878) {
         return 8;
     } 
-    else if (analog_value > 896 && analog_value <= 932) {
+    else if (analog_value > 878 && analog_value <= 920) {
         return 9;
     } 
-    else if (analog_value > 932 && analog_value <= 967) {
+    else if (analog_value > 920 && analog_value <= 960) {
         return 10;
     } 
-    else if (analog_value > 967 && analog_value <= 1005) {
+    else if (analog_value > 960 && analog_value <= 1001) {
         return 11;
     } 
-    else if (analog_value > 1005 && analog_value <= 1023) {
+    else if (analog_value > 1001 && analog_value <= 1023) {
         return 12;
     }
     
