@@ -94,6 +94,8 @@ void loop() {
         if (DEBUG) {
             Serial.print("Analog value: ");
             Serial.println(input_A1);
+            Serial.print("Palette choice: ");
+            Serial.println(palette_choice);
         }
         
         palette_switch_flag = false;
@@ -106,6 +108,8 @@ void loop() {
         if (DEBUG) {
             Serial.print("Analog value: ");
             Serial.println(input_A2);
+            Serial.print("Pattern choice: ");
+            Serial.println(pattern_choice);
         }
         
         pattern_switch_flag = false;

@@ -1,8 +1,8 @@
-#define DEBUG 1  // set to 1 to turn on Serial printing
+#define DEBUG 0  // set to 1 to turn on Serial printing
 
 // Pins
-byte pattern_button_pin = 7;  // any digital pin except 2, 3, 11, or 13
-byte white_out_button_pin = 8;  // any digital pin except 2, 3, 11, or 13
+byte pattern_button_pin = 1;  // any digital pin except 2, 3, 11, or 13
+byte white_out_button_pin = 2;  // any digital pin except 2, 3, 11, or 13
 
 int pattern_button_state = 0;
 int white_out_button_state = 0;
