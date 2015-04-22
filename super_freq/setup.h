@@ -7,9 +7,9 @@ byte white_out_button_pin = 2;  // any digital pin except 2, 3, 11, or 13
 int pattern_button_state = 0;
 int white_out_button_state = 0;
 
-// Interrupt flags
-volatile boolean palette_switch_flag = false;
-volatile boolean pattern_switch_flag = false;
+// Interrupt flags, default to true to trigger initial read
+volatile boolean palette_switch_flag = true;
+volatile boolean pattern_switch_flag = true;
 
 // LEDeez
 int nLEDs = 32;  // Number of RGB LEDs in strand
