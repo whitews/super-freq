@@ -13,33 +13,7 @@ byte palette_color_count = 24;
 Color color_palette[24];
 
 // each palette is 24 colors, all are stored in the same array
-const struct Color palettes[168] PROGMEM = {
-    // 1st palette: full spectrum of colors
-    {  25,   0, 100 },  // indigo
-    {   0,   0, 100 },  // blue
-    {   0,  25, 100 },  // med. blue
-    {   0,  50, 100 },  // sky blue
-    {   0,  75, 100 },  // pale blue
-    {   0, 100, 100 },  // cyan
-    {   0, 100,  75 },  // pale green
-    {   0, 100,  50 },  // grass green
-    {   0, 100,  25 },  // bright green
-    {   0, 100,   0 },  // green
-    {  25, 100,   0 },  // lime
-    {  50, 100,   0 },  // bright lime
-    {  75, 100,   0 },  // neon lime
-    { 100, 100,   0 },  // yellow
-    { 100,  75,   0 },  // orange
-    { 100,  50,   0 },  // med. orange
-    { 100,  25,   0 },  // dark orange
-    { 100,   0,   0 },  // red
-    { 100,   0,  25 },  // pink
-    { 100,   0,  50 },  // bright pink
-    { 100,   0,  75 },  // hot pink
-    { 100,   0, 100 },  // purple
-    { 100,  50, 100 },  // hot purple
-    { 100, 100, 100 },  // white hot
-
+const struct Color palettes[144] PROGMEM = {
     // 2nd palette: full spectrum of colors 2
     {  14,   0,  61 },  // microviolet
     {   0,   0,  83 },  // blue
@@ -59,38 +33,38 @@ const struct Color palettes[168] PROGMEM = {
     {  79,  15,   0 },  // orange
     {  81,   7,   0 },  // orange-red
     {  83,   0,   0 },  // red
-    {  80,   0,   2 },  // pink
-    {  73,   0,  11 },  // bright pink
-    {  63,   0,  21 },  // hot pink
+    {  80,   0,   2 },  // almost red
+    {  73,   0,  11 },  // red onion
+    {  63,   0,  21 },  // purplish-red
     {  47,   0,  27 },  // purple
-    {  37,   0,  37 },  // hot purple
-    {  27,   0,  47 },  // white hot
+    {  37,   0,  37 },  // ultraviolet
+    {  27,   0,  47 },  // violet
 
     // 2nd palette: warm colors
-    { 100, 100,   0 },  // yellow
-    { 100, 100,   0 },  // yellow
-    { 100, 100,   0 },  // yellow
-    { 100, 100,   0 },  // yellow
-    { 100,  50,   0 },  // orange
-    { 100,  50,   0 },  // orange
-    { 100,  50,   0 },  // orange
-    { 100,  50,   0 },  // orange
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0,   0 },  // red
-    { 100,   0, 100 },  // purple
-    { 100,   0, 100 },  // purple
-    { 100,   0, 100 },  // purple
-    { 100,   0, 100 },  // purple
-    { 100,  50, 100 },  // hot purple
-    { 100,  50, 100 },  // hot purple
-    { 100,  50, 100 },  // hot purple
-    { 100,  50, 100 },  // hot purple
-    { 100, 100, 100 },  // white hot
-    { 100, 100, 100 },  // white hot
-    { 100, 100, 100 },  // white hot
-    { 100, 100, 100 },  // white hot
+    {  47,  25,   0},
+    {  51,  24,   0},
+    {  55,  23,   0},
+    {  59,  21,   0},
+    {  63,  19,   0},
+    {  67,  18,   0},
+    {  71,  17,   0},
+    {  75,  15,   0},
+    {  78,  13,   0},
+    {  80,  11,   0},
+    {  81,   9,   0},
+    {  82,   7,   0},
+    {  83,   5,   0},
+    {  84,   4,   0},
+    {  85,   3,   0},
+    {  86,   2,   0},
+    {  88,   0,   0},
+    {  82,   0,   1},
+    {  80,   0,   2},
+    {  78,   0,   4},
+    {  76,   0,   7},
+    {  74,   0,   9},
+    {  72,   0,  11},
+    {  72,   0,  13},
      
      // 3rd palette: Blue Orange
     {   0,   0, 100 },  // blue
