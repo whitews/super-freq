@@ -1,7 +1,7 @@
 // FFT constants
 #define SAMPLE_RATE 9600
 #define SKIP_MULT 8
-#define MAX_FFT_BIN 16000
+#define MAX_FFT_BIN 16383
 #define LIN_OUT 1          // use the linear output function
 #define FFT_N 128          // set number of FFT points
 #define MIN_FFT_SUM 300    // Used to turn off the lights for low volumes
@@ -214,8 +214,15 @@ void loop() {
         sum_fft += fft_lin_out[i];
     }
 
-    // Use sum_fft to determine brightness
-    brightness = round(1.0 * max_brightness * sum_fft / MAX_FFT_BIN);
+    // Use sum_fft to determine brightness, but substract our min threshold
+    // first to allow reaching lower brightness levels
+    if (sum_fft > MIN_FFT_SUM) {
+        brightness = round(
+            1.0 * max_brightness * (sum_fft - MIN_FFT_SUM) / MAX_FFT_BIN
+        );
+    } else {
+        brightness = 0;
+    }
     
     // safety net in case our calculated brightness was out of range
     if (brightness > 127) {  // too much

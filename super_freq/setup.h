@@ -1,4 +1,4 @@
-#define DEBUG 0  // set to 1 to turn on Serial printing
+#define DEBUG 1  // set to 1 to turn on Serial printing
 
 // Pins
 byte pattern_button_pin = 1;  // any digital pin except 2, 3, 11, or 13
