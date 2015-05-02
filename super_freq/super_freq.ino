@@ -191,15 +191,15 @@ void loop() {
         // dampen low-frequency bins, as they tend to be dominant
         switch (i) {
             case (1):
-                fft_bin_value = round(fft_lin_out[1] * .75);
+                fft_bin_value = round(fft_lin_out[i] * .75);
             case (2):
-                fft_bin_value = round(fft_lin_out[1] * .80);
+                fft_bin_value = round(fft_lin_out[i] * .80);
             case (3):
-                fft_bin_value = round(fft_lin_out[1] * .85);
+                fft_bin_value = round(fft_lin_out[i] * .85);
             case (4):
-                fft_bin_value = round(fft_lin_out[1] * .90);
+                fft_bin_value = round(fft_lin_out[i] * .90);
             case (5):
-                fft_bin_value = round(fft_lin_out[1] * .95);
+                fft_bin_value = round(fft_lin_out[i] * .95);
         }
         if (max_value < fft_bin_value) {
             // peak index determines frequency
