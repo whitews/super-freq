@@ -33,6 +33,8 @@ byte new_palette_choice;
 byte palette_choice = 0;
 byte pattern_choice = 5;
 
+int fft_bin_value;
+
 void setLEDcount() {
     white_out_button_state = digitalRead(white_out_button_pin);
     nLEDs = 1;

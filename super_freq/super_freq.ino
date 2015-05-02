@@ -1,11 +1,11 @@
 // FFT constants
 #define SAMPLE_RATE 9600
 #define SKIP_MULT 8
-#define MAX_FFT_BIN 32767
+#define MAX_FFT_BIN 16000
 #define LIN_OUT 1          // use the linear output function
 #define FFT_N 128          // set number of FFT points
-#define MIN_FFT_SUM 900    // Used to turn off the lights for low volumes
-#define MIN_PEAK_VALUE 400  // Used to turn off the lights for low volumes
+#define MIN_FFT_SUM 300    // Used to turn off the lights for low volumes
+#define MIN_PEAK_VALUE 150  // Used to turn off the lights for low volumes
 
 #include <math.h>
 #include <FFT.h>
@@ -183,17 +183,32 @@ void loop() {
     max_value = 0;
     sum_fft = 0;
     
-    // iterate over all bins except the first bin, 
+    // iterate over 1st 24 bins except the first bin, 
     // as the first one's the total power in the sample
-    for (int i=1; i < (FFT_N / 2); i++) {
-        if (max_value < fft_lin_out[i]) {
+    for (int i=1; i <= 24; i++) {
+        fft_bin_value = fft_lin_out[i];
+        
+        // dampen low-frequency bins, as they tend to be dominant
+        switch (i) {
+            case (1):
+                fft_bin_value = round(fft_lin_out[1] * .75);
+            case (2):
+                fft_bin_value = round(fft_lin_out[1] * .80);
+            case (3):
+                fft_bin_value = round(fft_lin_out[1] * .85);
+            case (4):
+                fft_bin_value = round(fft_lin_out[1] * .90);
+            case (5):
+                fft_bin_value = round(fft_lin_out[1] * .95);
+        }
+        if (max_value < fft_bin_value) {
             // peak index determines frequency
             peak_index = i;
             // max value used as an additional check to turn the lights off
-            max_value = fft_lin_out[i];
+            max_value = fft_bin_value;
         }
         
-        // control brightness by summing all bins
+        // control brightness by summing all bins (undampened)
         sum_fft += fft_lin_out[i];
     }
 
@@ -213,7 +228,7 @@ void loop() {
     }
     
     setColor(peak_index, brightness);
-    delay(20);
+    delay(30);
             
     if (DEBUG) {
         frequency = peak_index * ((1.0 * SAMPLE_RATE / (SKIP_MULT / 2)) / (FFT_N / 2));
