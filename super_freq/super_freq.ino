@@ -20,14 +20,16 @@
 
 void setup() {
     if (DEBUG) {
-        Serial.begin(9600);
+        Serial.begin(115200);
     }
     
     // pull down for palette change interrupt pin
-    digitalWrite(2, LOW);
+    pinMode(10, INPUT);
+    digitalWrite(10, LOW);
     
     // pull down for pattern change interrupt pin
-    digitalWrite(2, LOW);
+    pinMode(11, INPUT);
+    digitalWrite(11, LOW);
     
     // setup interrupt 0 (digital pin 2) to detect changed palette 
     // rotary switch position
