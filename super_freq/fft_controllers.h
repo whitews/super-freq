@@ -1,11 +1,5 @@
-// FFT vars
-int peak_index;
-int max_value;
-int sum_fft;
-float frequency;  // only used for debugging
-
 void calculateFFT() {
-    for (int i = 0 ; i < FFT_N * 2; i += 2) { // save samples
+    for (int i = 0 ; i < FHT_N; i += 1) { // save samples
         /* 
          * A hack to sample at a slower rate. 
          * The minimum sample rate is 9.6 kHz, so reduce sample rate 
@@ -19,19 +13,18 @@ void calculateFFT() {
          * SAMPLE_RATE / (SKIP_MULT / 2)
          */
         for (int j = 0; j < SKIP_MULT; j++) {
-            while(!(ADCSRA & B00010000)); // wait for adc to be ready
-            ADCSRA = B11110101;           // restart adc
+            while(!(ADCSRA & B00010000));  // wait for adc to be ready
+            ADCSRA = B11110100;            // restart adc
         }
 
-        byte low_byte = ADCL;           // fetch ADC data (low byte)
-        int k = (ADCH << 8) | low_byte;  // combine low/high bytes to form into an int
+        byte low_byte = ADCL;              // fetch ADC data (low byte)
+        int k = (ADCH << 8) | low_byte;    // combine low/high bytes to form into an int
         k -= 0x0200;               // form into a signed int
         k <<= 6;                   // form into a 16b signed int
-        fft_input[i] = k;          // put real data into even bins
-        fft_input[i+1] = 0;        // set odd bins to 0
+        fht_input[i] = k;          // put real data into even bins
     }
-    fft_window();                  // window the data for better frequency response
-    fft_reorder();                 // reorder the data before doing the fft
-    fft_run();                     // process the data in the fft
-    fft_mag_lin();                 // take the output of the fft
+    fht_window();                  // window the data for better frequency response
+    fht_reorder();                 // reorder the data before doing the fft
+    fht_run();                     // process the data in the fft
+    fht_mag_lin();                 // take the output of the fft
 }

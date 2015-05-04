@@ -1,4 +1,4 @@
-#define DEBUG 1  // set to 1 to turn on Serial printing
+#define DEBUG 0  // set to 1 to turn on Serial printing
 
 // Pins
 byte pattern_button_pin = 1;  // any digital pin except 2, 3, 11, or 13
@@ -25,6 +25,12 @@ uint32_t strip_color = strip.Color(0, 0, 0);
 boolean set_LED_count_mode = false;
 boolean increment_LED_count = false;
 
+// FFT vars
+int peak_index;
+int max_value;
+int sum_fft;
+float frequency;  // only used for debugging
+
 // User selection vars
 int input_A1;
 int input_A2;
@@ -32,8 +38,6 @@ byte selection_A1;
 byte new_palette_choice;
 byte palette_choice = 0;
 byte pattern_choice = 5;
-
-int fft_bin_value;
 
 void setLEDcount() {
     white_out_button_state = digitalRead(white_out_button_pin);
