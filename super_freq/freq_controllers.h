@@ -1,4 +1,4 @@
-void calculateFFT() {
+void calculateFreq() {
     for (int i = 0 ; i < FHT_N; i += 1) { // save samples
         /* 
          * A hack to sample at a slower rate. 
@@ -10,7 +10,7 @@ void calculateFFT() {
          * frequencies.
          * 
          * The effective sample rate would then be:
-         * SAMPLE_RATE / (SKIP_MULT / 2)
+         * SAMPLE_RATE / SKIP_MULT
          */
         for (int j = 0; j < SKIP_MULT; j++) {
             while(!(ADCSRA & B00010000));  // wait for adc to be ready

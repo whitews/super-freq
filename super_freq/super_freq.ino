@@ -1,10 +1,10 @@
-// FFT constants
-#define SAMPLE_RATE 76923  // in kHz, 16MHz w/ prescaler=16 & 13 clock cycles
+// FHT constants
+#define SAMPLE_RATE 76923   // in kHz, 16MHz w/ prescaler=16 & 13 clock cycles
 #define SKIP_MULT 24
-#define MAX_FFT_BIN 16383
-#define LIN_OUT 1          // use the linear output function
-#define FHT_N 256          // set number of FFT points
-#define MIN_FFT_SUM 300    // Used to turn off the lights for low volumes
+#define MAX_BIN 16383
+#define LIN_OUT 1           // use the linear output function
+#define FHT_N 256           // set number of frequency bins
+#define MIN_BIN_SUM 300     // Used to turn off the lights for low volumes
 #define MIN_PEAK_VALUE 150  // Used to turn off the lights for low volumes
 
 #include <math.h>
@@ -15,7 +15,7 @@
 #include "palettes.h"
 #include "patterns.h"
 #include "interface_controllers.h"
-#include "fft_controllers.h"
+#include "freq_controllers.h"
 #include "light_strip_controllers.h"
 
 void setup() {
@@ -177,13 +177,13 @@ void loop() {
         }
     }
     
-    cli();           // disable global interrupts
-    calculateFFT();  // result is placed in fft_lin_out
-    sei();           // re-enable interrupts
+    cli();            // disable global interrupts
+    calculateFreq();  // result is placed in fht_lin_out
+    sei();            // re-enable interrupts
 
     peak_index = 0;
     max_value = 0;
-    sum_fft = 0;
+    sum_fht = 0;
     
     // iterate over 1st 24 bins except the first bin, 
     // as the first one's the total power in the sample
@@ -196,14 +196,14 @@ void loop() {
         }
         
         // control brightness by summing all bins (undampened)
-        sum_fft += fht_lin_out[i];
+        sum_fht += fht_lin_out[i];
     }
 
-    // Use sum_fft to determine brightness, but substract our min threshold
+    // Use sum_fht to determine brightness, but substract our min threshold
     // first to allow reaching lower brightness levels
-    if (sum_fft > MIN_FFT_SUM) {
+    if (sum_fht > MIN_BIN_SUM) {
         brightness = round(
-            1.0 * max_brightness * (sum_fft - MIN_FFT_SUM) / MAX_FFT_BIN
+            1.0 * max_brightness * (sum_fht - MIN_BIN_SUM) / MAX_BIN
         );
     } else {
         brightness = 0;
@@ -217,7 +217,7 @@ void loop() {
     }
     
     // Reset peak_index to zero if signal is weak
-    if (max_value < MIN_PEAK_VALUE || sum_fft < MIN_FFT_SUM) {
+    if (max_value < MIN_PEAK_VALUE || sum_fht < MIN_BIN_SUM) {
         peak_index = 0;
     }
     
@@ -227,8 +227,8 @@ void loop() {
     if (DEBUG) {
         frequency = peak_index * ((1.0 * SAMPLE_RATE / SKIP_MULT) / FHT_N);
         
-        Serial.print("FFT sum: ");
-        Serial.print(sum_fft);
+        Serial.print("FHT sum: ");
+        Serial.print(sum_fht);
         Serial.print("\tPeak index: ");
         Serial.print(peak_index);
         Serial.print("\tMax value: ");

@@ -25,10 +25,10 @@ uint32_t strip_color = strip.Color(0, 0, 0);
 boolean set_LED_count_mode = false;
 boolean increment_LED_count = false;
 
-// FFT vars
+// FHT vars
 int peak_index;
 int max_value;
-int sum_fft;
+int sum_fht;
 float frequency;  // only used for debugging
 
 // User selection vars
