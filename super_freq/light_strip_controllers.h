@@ -5,14 +5,14 @@ void setColor(int peak_index, int brightness) {
         red = 0;
         green = 0;
         blue = 0;
-    } else if (peak_index > 24) {
-        red = color_palette[23].red;
-        green = color_palette[23].green;
-        blue = color_palette[23].blue;  
+    } else if (peak_index > 30) {
+        red = current_palette[29].red;
+        green = current_palette[29].green;
+        blue = current_palette[29].blue;  
     } else {
-        red = color_palette[peak_index - 1].red;
-        green = color_palette[peak_index - 1].green;
-        blue = color_palette[peak_index - 1].blue;        
+        red = current_palette[peak_index - 1].red;
+        green = current_palette[peak_index - 1].green;
+        blue = current_palette[peak_index - 1].blue;        
     }
     
     strip_color = strip.Color(
@@ -39,14 +39,14 @@ void changeColorPalette() {
     // re-populate colors for color_palette from new palette choice
     if (palette_choice != new_palette_choice - 1) {
         palette_choice = new_palette_choice - 1;
-        for (int i = 0; i < 24; i++) {
-            color_palette[i].red = pgm_read_byte(
+        for (int i = 0; i < 30; i++) {
+            current_palette[i].red = pgm_read_byte(
                 &(palettes[i + (palette_color_count * palette_choice)].red)
             );
-            color_palette[i].green = pgm_read_byte(
+            current_palette[i].green = pgm_read_byte(
                 &(palettes[i + (palette_color_count * palette_choice)].green)
             );
-            color_palette[i].blue = pgm_read_byte(
+            current_palette[i].blue = pgm_read_byte(
                 &(palettes[i + (palette_color_count * palette_choice)].blue)
             );
         }

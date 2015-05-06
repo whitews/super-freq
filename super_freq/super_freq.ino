@@ -59,14 +59,14 @@ void setup() {
     DIDR0 = B00111111;
     
     // initial color palette
-    for (int i = 0; i < 24; i++) {
-        color_palette[i].red = pgm_read_byte(
+    for (int i = 0; i < palette_color_count; i++) {
+        current_palette[i].red = pgm_read_byte(
             &(palettes[i + (palette_color_count * palette_choice)].red)
         );
-        color_palette[i].green = pgm_read_byte(
+        current_palette[i].green = pgm_read_byte(
             &(palettes[i + (palette_color_count * palette_choice)].green)
         );
-        color_palette[i].blue = pgm_read_byte(
+        current_palette[i].blue = pgm_read_byte(
             &(palettes[i + (palette_color_count * palette_choice)].blue)
         );
     }
@@ -170,10 +170,10 @@ void loop() {
     // Note: this equality will be changed when color palette chooser 
     // is implemented
     if (palette_choice != palette_choice) {
-        for (int i = 0; i < 24; i++) {
-            color_palette[i].red = pgm_read_byte(&(palettes[i].red));
-            color_palette[i].green = pgm_read_byte(&(palettes[i].green));
-            color_palette[i].blue = pgm_read_byte(&(palettes[i].blue));
+        for (int i = 0; i < palette_color_count; i++) {
+            current_palette[i].red = pgm_read_byte(&(palettes[i].red));
+            current_palette[i].green = pgm_read_byte(&(palettes[i].green));
+            current_palette[i].blue = pgm_read_byte(&(palettes[i].blue));
         }
     }
     
@@ -185,9 +185,9 @@ void loop() {
     max_value = 0;
     sum_fht = 0;
     
-    // iterate over 1st 24 bins except the first bin, 
-    // as the first one's the total power in the sample
-    for (int i=1; i <= 48; i++) {
+    // iterate over bins 6 through 36, 
+    // Note: first bin is the total power in the sample
+    for (int i=6; i <= 36; i++) {
         if (max_value < fht_lin_out[i]) {
             // peak index determines frequency
             peak_index = i;
