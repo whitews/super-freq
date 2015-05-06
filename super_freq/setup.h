@@ -12,9 +12,10 @@ volatile boolean palette_switch_flag = true;
 volatile boolean pattern_switch_flag = true;
 
 // LEDeez
-int nLEDs = 32;  // Number of RGB LEDs in strand
+int nLEDs = 768;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
+int update_delay;  // in milliseconds, determined by the LED count
 
 // First parameter is the number of LEDs in the strand.
 // We're using the dedicated data and clock pins, 11 & 13 respectively
@@ -38,6 +39,22 @@ byte selection_A1;
 byte new_palette_choice;
 byte palette_choice = 0;
 byte pattern_choice = 5;
+
+void calculateUpdateDelay() {
+    if (nLEDs > 0 && nLEDs <= 32) {
+        update_delay = 20;
+    } else if (nLEDs > 32 && nLEDs <= 64) {
+        update_delay = 17;
+    } else if (nLEDs > 64 && nLEDs <= 128) {
+        update_delay = 14;
+    } else if (nLEDs > 128 && nLEDs <= 256) {
+        update_delay = 10;
+    } else if (nLEDs > 256 && nLEDs <= 512) {
+        update_delay = 4;
+    } else {
+        update_delay = 0;  // above 512, update is slow enough as it is
+    }
+}
 
 void setLEDcount() {
     white_out_button_state = digitalRead(white_out_button_pin);
@@ -81,6 +98,8 @@ void setLEDcount() {
             strip.show();
         }
     }
+    
+    calculateUpdateDelay();
     
     // button 2 was pressed, save LED count to EEPROM
     set_LED_count_mode = false;

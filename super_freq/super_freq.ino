@@ -23,6 +23,9 @@ void setup() {
         Serial.begin(115200);
     }
     
+    // determine the update delay based on LED count for pattern timing
+    calculateUpdateDelay();
+    
     // pull down for palette change interrupt pin
     pinMode(10, INPUT);
     digitalWrite(10, LOW);
