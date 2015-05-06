@@ -133,7 +133,7 @@ void loop() {
         }
         switch (pattern_choice) {
             case 0:
-                bullet();
+                comet();
             case 1:
                 snail();
             case 2:
@@ -147,15 +147,15 @@ void loop() {
             case 6:
                 swell();
             case 7:
-                bullet();
+                comet();
             case 8:
-                bullet();
+                comet();
             case 9:
-                bullet();
+                comet();
             case 10:
-                bullet();
+                comet();
             case 11:
-                bullet();
+                comet();
             default:
                 break;
         }

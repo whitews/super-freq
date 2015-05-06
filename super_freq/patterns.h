@@ -28,19 +28,28 @@ void engageViolence() {
 }
 
 // start pattern functions
-void bullet() {
+void comet() {
     // a single LED running fast across the strip
     int j = 0;
+    
     while (pattern_button_state == HIGH) {
         for (int i=0; i < strip.numPixels(); i++) {
             if (i==j) {
-                strip.setPixelColor(i, strip_color);
-            } else {
+                strip.setPixelColor(i,   strip.Color( 63,  63, 127));
+                strip.setPixelColor(i-1, strip.Color( 31,  31,  95));
+                strip.setPixelColor(i-2, strip.Color( 13,  13,  63));
+                strip.setPixelColor(i-3, strip.Color(  7,   9,   0));
+                strip.setPixelColor(i-4, strip.Color(  5,   5,   0));
+                strip.setPixelColor(i-5, strip.Color(  3,   0,   0));
+                strip.setPixelColor(i-6, strip.Color(  1,   0,   0));
+            } else if (i>j || i < j-6) {
                 strip.setPixelColor(i, strip.Color(0, 0, 0));
             }
         }
         strip.show();
-        delay(10);
+        
+        delay(update_delay);
+        
         j++;
         if (j >= strip.numPixels()) {
             j = 0;
