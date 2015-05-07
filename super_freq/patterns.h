@@ -120,6 +120,11 @@ void lick_the_rainbow() {
     byte skip;
     
     while (pattern_button_state == HIGH) {
+        // turn all the lights off
+        for (int i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(0, 0, 0));
+        }
+        
         while (j < strip.numPixels()) {
             skip = 2 + rand() % 6;
             j += skip;
@@ -129,17 +134,10 @@ void lick_the_rainbow() {
             blue = rand() % 127;
             
             strip.setPixelColor(j, strip.Color(red, green, blue));
-            
-            j++;
         }
         strip.show();
         
         delay(500);
-        
-        // turn all the lights off
-        for (int i=0; i < strip.numPixels(); i++) {
-            strip.setPixelColor(i, strip.Color(0, 0, 0));
-        }
         
         j = 0;
         
