@@ -143,15 +143,15 @@ void loop() {
             case 4:
                 shimmy(16);
             case 5:
-                fountain();
+                lick_the_rainbow();
             case 6:
-                bitrot();
+                fountain();
             case 7:
-                bitgarden();
+                bitrot();
             case 8:
-                swell();
+                bitgarden();
             case 9:
-                comet();
+                swell();
             case 10:
                 comet();
             case 11:

@@ -113,6 +113,40 @@ void shimmy(int shimmy_offset) {
     }
 }
 
+// start pattern functions
+void lick_the_rainbow() {
+    // random colors spread over random intervals
+    int j = 0;
+    byte skip;
+    
+    while (pattern_button_state == HIGH) {
+        while (j < strip.numPixels()) {
+            skip = 2 + rand() % 6;
+            j += skip;
+            
+            red = rand() % 127;
+            green = rand() % 127;
+            blue = rand() % 127;
+            
+            strip.setPixelColor(j, strip.Color(red, green, blue));
+            
+            j++;
+        }
+        strip.show();
+        
+        delay(500);
+        
+        // turn all the lights off
+        for (int i=0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(0, 0, 0));
+        }
+        
+        j = 0;
+        
+        pattern_button_state = digitalRead(pattern_button_pin);
+    }
+}
+
 void fountain() {
     // start in the middle and grow both sides
     
