@@ -11,14 +11,42 @@ void engageViolence() {
         Serial.println("Violence mode engaged!");
     }
     
-    // first ramp up the brightness
-    for (int i=0; i < 128; i++) {
-        strip_color = strip.Color(i, i, i);
-        for (int i=0; i < strip.numPixels(); i++) {
-            strip.setPixelColor(i, strip_color);
+    // Violence equals chick-chick boom!
+    // First, turn the lights off
+    strip_color = strip.Color(0, 0, 0);
+    for (int k=0; k < strip.numPixels(); k++) {
+        strip.setPixelColor(k, strip_color);
+    }
+    strip.show();
+    delay(90);
+    
+    // chick-chick
+    for (int i=0; i < 2; i++) {
+        for (int j=0; j < 4; j++) {
+            strip_color = strip.Color(j, j, j*2);
+            for (int k=0; k < strip.numPixels(); k++) {
+                strip.setPixelColor(k, strip_color);
+            }
+            strip.show();
+            delay(15);
+        }
+        strip_color = strip.Color(0, 0, 0);
+        for (int k=0; k < strip.numPixels(); k++) {
+            strip.setPixelColor(k, strip_color);
         }
         strip.show();
-        delay(10);
+        delay(60);
+    }
+    delay(90);
+    
+    // boom
+    for (int i=0; i < 128; i++) {
+        strip_color = strip.Color(i, i, i);
+        for (int j=0; j < strip.numPixels(); j++) {
+            strip.setPixelColor(j, strip_color);
+        }
+        strip.show();
+        delay(4);
     }
     
     while (white_out_button_state == HIGH) {
