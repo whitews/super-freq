@@ -135,26 +135,28 @@ void loop() {
             case 0:
                 comet();
             case 1:
-                snail();
+                shimmy(1);
             case 2:
-                shimmy();
+                shimmy(4);
             case 3:
-                fountain();
+                shimmy(8);
             case 4:
-                bitrot();
+                shimmy(16);
             case 5:
-                bitgarden();
+                fountain();
             case 6:
-                swell();
+                bitrot();
             case 7:
-                comet();
+                bitgarden();
             case 8:
-                comet();
+                swell();
             case 9:
                 comet();
             case 10:
                 comet();
             case 11:
+                comet();
+            case 12:
                 comet();
             default:
                 break;

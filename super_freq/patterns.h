@@ -58,48 +58,29 @@ void comet() {
     }
 }
 
-void snail() {
-    // a single LED running slow across the strip
-    int j = 0;
+void shimmy(int shimmy_offset) {
+    // toggle the shimmy offset
     while (pattern_button_state == HIGH) {
-        for (int i=0; i < strip.numPixels(); i++) {
-            if (i==j) {
-                strip.setPixelColor(i, strip_color);
-            } else {
-                strip.setPixelColor(i, strip.Color(0, 0, 0));
-            }
-        }
-        strip.show();
-        delay(250);
-        j++;
-        if (j >= strip.numPixels()) {
-            j = 0;
-        }
-        pattern_button_state = digitalRead(pattern_button_pin);
-    }
-}
-
-void shimmy() {
-    // evens then odds
-    while (pattern_button_state == HIGH) {
-        for (int i=0; i < strip.numPixels(); i++) {
+        for (int i=0; i < strip.numPixels(); i+=2*shimmy_offset) {
             if (shimmy_even) {
-                if (i%2) {
-                    strip.setPixelColor(i, strip_color);
-                } else {
-                    strip.setPixelColor(i, strip.Color(0, 0, 0));
+                for (int j=i; j<i+shimmy_offset; j++) {
+                    strip.setPixelColor(j, strip_color);
+                }
+                for (int j=i+shimmy_offset; j<i+(2*shimmy_offset); j++) {
+                    strip.setPixelColor(j, strip.Color(0, 0, 0));
                 }
             } else {
-                if (i%2) {
-                    strip.setPixelColor(i, strip.Color(0, 0, 0));
-                } else {
-                    strip.setPixelColor(i, strip_color);
+                for (int j=i; j<i+shimmy_offset; j++) {
+                    strip.setPixelColor(j, strip.Color(0, 0, 0));
                 }
-            }
+                for (int j=i+shimmy_offset; j<i+2*shimmy_offset; j++) {
+                    strip.setPixelColor(j, strip_color);
+                }
+            } 
         }
         shimmy_even = !shimmy_even;
         strip.show();
-        delay(100);
+        delay(150);
         pattern_button_state = digitalRead(pattern_button_pin);
     }
 }
