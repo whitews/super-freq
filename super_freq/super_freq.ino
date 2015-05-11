@@ -137,11 +137,11 @@ void loop() {
             case 1:
                 shimmy(1);
             case 2:
-                shimmy(4);
-            case 3:
                 shimmy(8);
+            case 3:
+                wheel();
             case 4:
-                shimmy(16);
+                comet();
             case 5:
                 lick_the_rainbow();
             case 6:

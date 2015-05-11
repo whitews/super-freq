@@ -113,6 +113,93 @@ void shimmy(int shimmy_offset) {
     }
 }
 
+void wheel() {
+    // a rotate 5 LEDs of current color separated by 3 off LEDs, rinse, repeat    
+    while (pattern_button_state == HIGH) {
+        for (int j=0; j < 8; j++) {
+            for (int i=0; i <= strip.numPixels(); i+=8) {
+                if (j == 0) {
+                    strip.setPixelColor(i,   strip_color);
+                    strip.setPixelColor(i+1, strip_color);
+                    strip.setPixelColor(i+2, strip_color);
+                    strip.setPixelColor(i+3, strip_color);
+                    strip.setPixelColor(i+4, strip_color);
+                    strip.setPixelColor(i+5, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+6, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+7, strip.Color(0, 0, 0));
+                } else if (j == 1) {
+                    strip.setPixelColor(i,   strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+1, strip_color);
+                    strip.setPixelColor(i+2, strip_color);
+                    strip.setPixelColor(i+3, strip_color);
+                    strip.setPixelColor(i+4, strip_color);
+                    strip.setPixelColor(i+5, strip_color);
+                    strip.setPixelColor(i+6, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+7, strip.Color(0, 0, 0));
+                } else if (j == 2) {
+                    strip.setPixelColor(i,   strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+1, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+2, strip_color);
+                    strip.setPixelColor(i+3, strip_color);
+                    strip.setPixelColor(i+4, strip_color);
+                    strip.setPixelColor(i+5, strip_color);
+                    strip.setPixelColor(i+6, strip_color);
+                    strip.setPixelColor(i+7, strip.Color(0, 0, 0));
+                } else if (j == 3) {
+                    strip.setPixelColor(i,   strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+1, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+2, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+3, strip_color);
+                    strip.setPixelColor(i+4, strip_color);
+                    strip.setPixelColor(i+5, strip_color);
+                    strip.setPixelColor(i+6, strip_color);
+                    strip.setPixelColor(i+7, strip_color);
+                } else if (j == 4) {
+                    strip.setPixelColor(i,   strip_color);
+                    strip.setPixelColor(i+1, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+2, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+3, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+4, strip_color);
+                    strip.setPixelColor(i+5, strip_color);
+                    strip.setPixelColor(i+6, strip_color);
+                    strip.setPixelColor(i+7, strip_color);
+                } else if (j == 5) {
+                    strip.setPixelColor(i,   strip_color);
+                    strip.setPixelColor(i+1, strip_color);
+                    strip.setPixelColor(i+2, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+3, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+4, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+5, strip_color);
+                    strip.setPixelColor(i+6, strip_color);
+                    strip.setPixelColor(i+7, strip_color);
+                } else if (j == 6) {
+                    strip.setPixelColor(i,   strip_color);
+                    strip.setPixelColor(i+1, strip_color);
+                    strip.setPixelColor(i+2, strip_color);
+                    strip.setPixelColor(i+3, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+4, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+5, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+6, strip_color);
+                    strip.setPixelColor(i+7, strip_color);
+                } else if (j == 7) {
+                    strip.setPixelColor(i,   strip_color);
+                    strip.setPixelColor(i+1, strip_color);
+                    strip.setPixelColor(i+2, strip_color);
+                    strip.setPixelColor(i+3, strip_color);
+                    strip.setPixelColor(i+4, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+5, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+6, strip.Color(0, 0, 0));
+                    strip.setPixelColor(i+7, strip_color);
+                }
+            }
+            strip.show();
+            delay(100);
+        }
+        
+        pattern_button_state = digitalRead(pattern_button_pin);
+    }
+}
+
 // start pattern functions
 void lick_the_rainbow() {
     // random colors spread over random intervals
