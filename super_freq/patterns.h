@@ -248,7 +248,7 @@ void fountain() {
 void bitrot() {
     // start with all lights on w/ current color then
     // randomly turn off one light at a time until all
-    // are gone (in groups of 64 LEDs)
+    // are gone (in groups of 32 LEDs)
         
     while (pattern_button_state == HIGH) {
         int pattern_size = 32;
@@ -313,6 +313,7 @@ void bitgarden() {
     }
     
     while (pattern_button_state == HIGH) {
+        int pattern_size = 32;
         
         // turn off all LEDs 
         for (int i=0; i < strip.numPixels(); i++) {
@@ -322,14 +323,18 @@ void bitgarden() {
         // keep looping while bitgarden_grew is false
         while (!bitgarden_grew) {       
             // chose a random LED
-            bitgarden_led = rand()%strip.numPixels();
-            strip.setPixelColor(bitgarden_led, strip_color);
+            bitgarden_led = rand()%pattern_size;
+            
+            for (int i=0; i < strip.numPixels(); i+=pattern_size) {
+                strip.setPixelColor(bitgarden_led + i, strip_color);
+            }
+            
             strip.show();
             
             delay(10);
             
             // check if all lights are off
-            for (int i=0; i < strip.numPixels(); i++) {
+            for (int i=0; i < pattern_size; i++) {
                 if (strip.getPixelColor(i) <= 0) {
                     // found a blank LED, not all on yet
                     bitgarden_grew = false;
