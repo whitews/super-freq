@@ -12,7 +12,7 @@ volatile boolean palette_switch_flag = true;
 volatile boolean pattern_switch_flag = true;
 
 // LEDeez
-int nLEDs = 768;  // Number of RGB LEDs in strand
+int nLEDs = 32;  // Number of RGB LEDs in strand
 byte max_brightness = 127;  // LED intensity max is 127
 byte brightness;  // where LED brightness is stored (based on dB level)
 int update_delay;  // in milliseconds, determined by the LED count
