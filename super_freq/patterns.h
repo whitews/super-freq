@@ -180,7 +180,33 @@ void wheel() {
     }
 }
 
-// start pattern functions
+void rand_pong() {
+    // a random LED with a random color changing at a random interval 
+    int j = 0;
+    
+    // turn all the lights off
+    for (int i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, strip.Color(0, 0, 0));
+    }
+    
+    while (pattern_button_state == HIGH) {
+        strip.setPixelColor(j, strip.Color(0, 0, 0));
+        
+        j = rand() % strip.numPixels();
+        
+        red = rand() % 127;
+        green = rand() % 127;
+        blue = rand() % 127;
+        
+        strip.setPixelColor(j, strip.Color(red, green, blue));
+        strip.show();
+        
+        delay((rand() % 250) + 50);
+        
+        pattern_button_state = digitalRead(pattern_button_pin);
+    }
+}
+
 void lick_the_rainbow() {
     // random colors spread over random intervals
     int j = 0;

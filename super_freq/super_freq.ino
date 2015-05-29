@@ -141,7 +141,7 @@ void loop() {
             case 3:
                 wheel();
             case 4:
-                comet();
+                rand_pong();
             case 5:
                 lick_the_rainbow();
             case 6:
