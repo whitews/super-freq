@@ -248,9 +248,10 @@ void fountain() {
 void bitrot() {
     // start with all lights on w/ current color then
     // randomly turn off one light at a time until all
-    // are gone
+    // are gone (in groups of 64 LEDs)
         
     while (pattern_button_state == HIGH) {
+        int pattern_size = 32;
         
         // reset the LEDs to the current color in case the button
         // is held past one bitrot cycle
@@ -260,14 +261,18 @@ void bitrot() {
         
         while (!bitrot_rotten) {       
             // chose a random LED
-            bitrot_led = rand()%strip.numPixels();
-            strip.setPixelColor(bitrot_led, strip.Color(0, 0, 0));
+            bitrot_led = rand()%pattern_size;
+            
+            for (int i=0; i < strip.numPixels(); i+=pattern_size) {
+                strip.setPixelColor(bitrot_led + i, strip.Color(0, 0, 0));
+            }
+            
             strip.show();
             
             delay(10);
             
             // check if all lights are off
-            for (int i=0; i < strip.numPixels(); i++) {
+            for (int i=0; i < pattern_size; i++) {
                 if (strip.getPixelColor(i) > 0) {
                     // found a lit LED, not all off yet
                     bitrot_rotten = false;
