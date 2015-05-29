@@ -269,7 +269,7 @@ void bitrot() {
             
             strip.show();
             
-            delay(10);
+            delay(50);
             
             // check if all lights are off
             for (int i=0; i < pattern_size; i++) {
@@ -331,7 +331,7 @@ void bitgarden() {
             
             strip.show();
             
-            delay(10);
+            delay(50);
             
             // check if all lights are off
             for (int i=0; i < pattern_size; i++) {
